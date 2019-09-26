@@ -1,0 +1,48 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "full_formatter": {
+            "format": "%(asctime)s|%(levelname)s|%(name)s|%(filename)s:%(lineno)d|%(message)s"
+        }
+    },
+    "handlers": {
+        "console_handler": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "full_formatter",
+            "stream": "ext://sys.stdout"
+        },
+        "rotating_file_handler": {
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "level": "DEBUG",
+            "formatter": "full_formatter",
+            "filename": "/var/log/m3d.log",
+            "when": "D",
+            "backupCount": 10,
+            "encoding": "utf-8",
+            "utc": true
+        }
+    },
+    "loggers": {
+        "botocore": {
+            "level": "ERROR",
+            "handlers": ["console_handler", "rotating_file_handler"],
+            "propagate": "no"
+        },
+        "boto3": {
+            "level": "ERROR",
+            "handlers": ["console_handler", "rotating_file_handler"],
+            "propagate": "no"
+        },
+        "s3transfer": {
+            "level": "ERROR",
+            "handlers": ["console_handler", "rotating_file_handler"],
+            "propagate": "no"
+        }
+    },
+    "root": {
+        "level": "INFO",
+        "handlers": ["console_handler", "rotating_file_handler"]
+    }
+}

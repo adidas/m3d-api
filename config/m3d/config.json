@@ -1,0 +1,32 @@
+{
+  "emails": [
+    "test@test.com"
+  ],
+  "dir_exec": "/tmp/",
+  "python": {
+    "main": "m3d_main.pyc",
+    "base_package": "m3d"
+  },
+  "subdir_projects": {
+    "m3d_engine": "m3d-engine/target/scala-2.11/",
+    "m3d_api": "m3d-api/"
+  },
+  "tags": {
+    "full_load": "full_load",
+    "delta_load": "delta_load",
+    "append_load": "append_load",
+    "table_suffix_stage": "_stg1",
+    "table_suffix_swap": "_swap",
+    "config": "config",
+    "system": "system",
+    "algorithm": "m3d-engine",
+    "table": "table",
+    "view": "view",
+    "upload": "upload",
+    "pushdown": "pushdown",
+    "aws": "aws",
+    "hdfs": "hdfs",
+    "file": "file"
+  },
+  "data_dict_delimiter": "|"
+}

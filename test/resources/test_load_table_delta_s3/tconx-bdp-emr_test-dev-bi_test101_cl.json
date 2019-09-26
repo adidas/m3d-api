@@ -1,0 +1,64 @@
+{
+    "source": {
+        "table": "TEST101_CL",
+        "schema": "bi_m3d_out", 
+        "technology": "hana", 
+        "system": "bi", 
+        "database": "phb"
+    }, 
+    "destination": {
+        "table_lake": "bi_test101_cl",
+        "database": "bdp_test",
+        "system": "bdp", 
+        "table_partition_strategy": "month", 
+        "table_lakeout": "", 
+        "technology": "hive", 
+        "table_lake_changelog": "", 
+        "columns": [
+            {
+                "datetime_format": "", 
+                "is_part_of_business_key": "y", 
+                "scale": "0", 
+                "position": "1",
+                "datatype": "decimal", 
+                "name_source": "SORT_TIMESTAMP", 
+                "length": "15", 
+                "is_partition_column": "", 
+                "name_lakeout": "", 
+                "timezone": "", 
+                "name_lake": "sort_timestamp"
+            }, 
+            {
+                "datetime_format": "", 
+                "is_part_of_business_key": "", 
+                "scale": "", 
+                "position": "2",
+                "datatype": "varchar",
+                "name_source": "NAME2",
+                "length": "5",
+                "is_partition_column": "",
+                "name_lakeout": "",
+                "timezone": "",
+                "name_lake": "name2"
+            },
+            {
+                "datetime_format": "",
+                "is_part_of_business_key": "",
+                "scale": "",
+                "position": "3",
+                "datatype": "varchar",
+                "name_source": "NAME3",
+                "length": "10",
+                "is_partition_column": "",
+                "name_lakeout": "",
+                "timezone": "",
+                "name_lake": "name3"
+            }
+        ], 
+        "schema": "dev_lake"
+    }, 
+    "source_files": {
+        "delimiter": "|", 
+        "header_lines": "0"
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "source": {
+        "table": "bi_test101",
+        "schema": "bi_del_out", 
+        "technology": "hive", 
+        "system": "bdp", 
+        "database": "phb"
+    }, 
+    "destination": {
+        "table_lake": "bi_test101",
+        "database": "bdp_test", 
+        "system": "bdp", 
+        "table_partition_strategy": "month", 
+        "table_lakeout": "bi_retail_test",
+        "technology": "hive", 
+        "table_lake_changelog": "bi_test101_cl",
+        "columns": [
+            {
+                "datetime_format": null, 
+                "is_part_of_business_key": "y", 
+                "scale": null, 
+                "position": "1", 
+                "datatype": "varchar", 
+                "name_source": "COUNTRY", 
+                "length": "3", 
+                "is_partition_column": null, 
+                "name_lakeout": null,
+                "timezone": null, 
+                "name_lake": "country"
+            }
+        ], 
+        "schema": "lake"
+    }, 
+    "source_files": {
+        "delimiter": "|", 
+        "header_lines": "0"
+    }
+}
