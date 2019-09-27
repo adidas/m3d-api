@@ -1,6 +1,6 @@
 py
 requests==2.21.0
-urllib3==1.24.1
+urllib3==1.24.2
 pyodbc==4.0.24
 pyhdb==0.3.4
 cx_Oracle==7.0.0
