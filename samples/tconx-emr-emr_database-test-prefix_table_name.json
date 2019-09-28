@@ -1,0 +1,51 @@
+{
+  "source": {
+    "table": "table_name",
+    "schema": "db",
+    "technology": "mysql",
+    "system": "prefix",
+    "database": "db"
+  },
+  "destination": {
+    "table_lake": "prefix_table_name",
+    "database": "emr_database",
+    "system": "emr",
+    "table_partition_strategy": "no-part",
+    "table_lakeout": null,
+    "technology": "hive",
+    "table_lake_changelog": null,
+    "columns": [
+      {
+        "datetime_format": null,
+        "is_part_of_business_key": "y",
+        "scale": null,
+        "position": 1,
+        "datatype": "varchar",
+        "name_source": "column1",
+        "length": 255,
+        "is_partition_column": null,
+        "name_lakeout": null,
+        "timezone": null,
+        "name_lake": "column1"
+      },
+      {
+        "datetime_format": null,
+        "is_part_of_business_key": null,
+        "scale": null,
+        "position": 2,
+        "datatype": "varchar",
+        "name_source": "column2",
+        "length": 40,
+        "is_partition_column": null,
+        "name_lakeout": null,
+        "timezone": null,
+        "name_lake": "column2"
+      }
+    ],
+    "schema": "lake"
+  },
+  "source_files": {
+    "delimiter": ",",
+    "header_lines": 0
+  }
+}
