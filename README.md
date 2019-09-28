@@ -220,7 +220,7 @@ For further information open the [adidas terms and conditions](https://github.co
 
 ### FAQ
 
-*   **What is a TCONX file?** It is a JSON file containing the definition of a table to be created in an Hadoop environment. Entries in the file include destination database, table name in lake, table columns, name of columns in the different M3D layers. For an example of what a TCONX file looks like, you can take a look at the [samples](https://github.com/adidas/m3d-api/samples/tconx-emr-emr_database-test-prefix_table_name.json) subdirectory in this repo. It is important to note that the parameters mentioned above (table name, environment, etc) are part of the TCONX file naming convention. In samples/tconx-(emr)-(emr\_database)-(test)-(prefix)\_(table\_name).json, we can find the following parts in parenthesis:
+*   **What is a TCONX file?** It is a JSON file containing the definition of a table to be created in an Hadoop environment. Entries in the file include destination database, table name in lake, table columns, name of columns in the different M3D layers. For an example of what a TCONX file looks like, you can take a look at the [samples](https://github.com/adidas/m3d-api/tree/master/samples) subdirectory in this repo. It is important to note that the parameters mentioned above (table name, environment, etc) are part of the TCONX file naming convention. In samples/tconx-(emr)-(emr\_database)-(test)-(prefix)\_(table\_name).json, we can find the following parts in parenthesis:
     *   emr - _this is the destination system_
     *   emr\_database - _this is the destination database_
     *   test - _this is the destination environment_
