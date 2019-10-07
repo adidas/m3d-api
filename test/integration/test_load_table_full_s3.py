@@ -119,7 +119,6 @@ class TestLoadTableFullS3(S3TableTestBase):
     @pytest.mark.emr
     @mock.patch("moto.emr.models.ElasticMapReduceBackend.describe_step", return_value=FakeStep("COMPLETED"))
     def test_full_load_emr_external_spark_parameters(self, _0):
-        # responses.add_passthru(self.default_server_url)
 
         tconx_src_path = \
             "test/resources/test_create_out_view_hive/test_empty_table_lakeout/config/empty_tabl_cd_lakeout.json"

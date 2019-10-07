@@ -192,7 +192,7 @@ class TestLoadTableDeltaS3(S3TableTestBase):
         assert sorted(add_tags_patch_call_args_list[0][0][0], key=lambda x: x["Key"]) == sorted([
             {"Key": "ApiMethod", "Value": "load_table"},
             {"Key": "LoadType", "Value": "DeltaLoad"},
-            {"Key": "TargetTable", "Value": "dev_lake.bi_test101"}
+            {"Key": "TargetTable", "Value": "bi_test101"}
         ], key=lambda x: x["Key"])
 
         remove_json_patch.assert_called_once()
