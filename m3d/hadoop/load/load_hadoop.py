@@ -8,15 +8,15 @@ from m3d.util.util import Util
 class LoadHadoop(object):
     PARAMETERS_KEY = "parameters"
 
-    def __init__(self, execution_system, table):
+    def __init__(self, execution_system, data_set):
         """
         Initialize Algorithm Config
 
         :param execution_system: execution system (EMR or Cloudera System)
-        :param table: an instance of table object
+        :param data_set: an instance of dataset object
         """
 
-        self._table = table
+        self._data_set = data_set
         self._execution_system = execution_system
 
         load_config_filename = self._create_load_config_filename()
@@ -76,19 +76,19 @@ class LoadHadoop(object):
         return "{load_tag}-{environment}-{table}{extension}".format(
             load_tag=self._get_load_load_tag(),
             environment=self._execution_system.environment,
-            table=self._table.table_lake,
+            table=self._data_set.table_lake,
             extension=ConfigService.Extensions.JSON
         )
 
     @staticmethod
-    def _read_acon_params(execution_system, table):
+    def read_acon_params(execution_system, table_name):
         config_service = ConfigService(execution_system.config)
 
         acon_path = config_service.get_acon_path(
             execution_system.cluster_mode,
             execution_system.database,
             execution_system.environment,
-            table.table_lake)
+            table_name)
 
         acon_dict = Util.load_dict(acon_path)
         return acon_dict.get(LoadHadoop.PARAMETERS_KEY, {})

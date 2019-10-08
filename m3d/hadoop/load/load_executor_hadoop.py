@@ -2,15 +2,18 @@ import json
 import logging
 
 from m3d import M3D
-from m3d.exceptions.m3d_exceptions import M3DUnsupportedDatabaseTypeException, M3DUnsupportedLoadTypeException
+from m3d.exceptions.m3d_exceptions import M3DUnsupportedDatabaseTypeException, M3DUnsupportedLoadTypeException, \
+    M3DUnsupportedDataTypeException
 from m3d.hadoop.core.hive_table import HiveTable
 from m3d.hadoop.core.spark_executor import SparkExecutor
+from m3d.hadoop.dataset.data_set_factory import DataSetFactory
 from m3d.hadoop.emr.emr_system import EMRSystem
-from m3d.hadoop.emr.s3_table import S3Table
 from m3d.hadoop.load.append_load import AppendLoad
 from m3d.hadoop.load.delta_load import DeltaLoad
 from m3d.hadoop.load.full_load import FullLoad
+from m3d.hadoop.load.load_hadoop import LoadHadoop
 from m3d.system.data_system import DataSystem
+from m3d.util.data_types import DataType
 
 
 class LoadExecutorHadoop(SparkExecutor):
@@ -25,36 +28,61 @@ class LoadExecutorHadoop(SparkExecutor):
         :param spark_params_dict: spark parameters
         """
 
-        super(LoadExecutorHadoop, self). __init__(execution_system)
+        super(LoadExecutorHadoop, self).__init__(execution_system)
 
         self._destination_table = destination_table
+        self._destination_subfolder = destination_table
         self._spark_params_dict = spark_params_dict
 
-        available_loads = self._get_available_emr_load_types()
+        available_loads = self._get_supported_emr_load_types()
         if load_type not in available_loads:
             raise M3DUnsupportedLoadTypeException(
                 load_type=load_type,
                 message="Loading algorithm {} not available.".format(load_type)
             )
 
-        table = S3Table(
-            emr_system=execution_system,
-            destination_table=destination_table
+        try:
+            load_params = LoadHadoop.read_acon_params(execution_system, destination_table)
+        except Exception:
+            logging.warning(
+                "Acon file could not be found for table: {} and execution system: {}".format(
+                    destination_table,
+                    execution_system.database_type
+                )
+            )
+            load_params = {}
+
+        if "data_type" in load_params:
+            available_data_types = self._get_supported_data_types()
+            data_type = load_params["data_type"]
+            if data_type not in available_data_types:
+                raise M3DUnsupportedDataTypeException(
+                    message="Data Type {} not available.".format(data_type)
+                )
+        else:
+            data_type = DataType.STRUCTURED
+
+        data_set = DataSetFactory.create_data_set(
+            execution_system,
+            load_type,
+            data_type,
+            destination_table
         )
 
         self._load_wrapper = available_loads[load_type](
             execution_system=self._execution_system,
-            table=table
+            data_set=data_set,
+            load_params=load_params
         )
 
         self._execution_system.add_cluster_tags({
             EMRSystem.EMRClusterTag.API_METHOD: M3D.load_table.__name__,
             EMRSystem.EMRClusterTag.LOAD_TYPE: load_type,
-            EMRSystem.EMRClusterTag.TARGET_TABLE: table.db_table_lake
+            EMRSystem.EMRClusterTag.TARGET_TABLE: destination_table
         })
 
     @staticmethod
-    def _get_available_emr_load_types():
+    def _get_supported_emr_load_types():
         """
         Return a list of the available EMR load
 
@@ -66,6 +94,20 @@ class LoadExecutorHadoop(SparkExecutor):
             HiveTable.TableLoadType.DELTA: DeltaLoad,
             HiveTable.TableLoadType.APPEND: AppendLoad
         }
+
+    @staticmethod
+    def _get_supported_data_types():
+        """
+        Return a list of the available data load
+
+        :return: list data-type-name
+        """
+
+        return [
+            DataType.STRUCTURED,
+            DataType.SEMISTRUCTURED,
+            DataType.UNSTRUCTURED
+        ]
 
     def _get_spark_submit_str(self):
         """

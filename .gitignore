@@ -1,0 +1,9 @@
+*.iml
+*.pyc
+config/credentials/*
+.idea/*
+.cache/*
+.pytest_cache/*
+version.txt
+test/runs
+.coverage

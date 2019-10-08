@@ -6,27 +6,30 @@ from m3d.util import util
 
 class DeltaLoad(LoadHadoop):
 
-    def __init__(self, execution_system, table):
+    def __init__(self, execution_system, data_set, load_params):
         """
         Initialize delta load class for S3 tables.
 
         :param execution_system an instance of EMRSystem
-        :param table: destination table code
+        :param data_set: destination table code
+        :param load_params: destination table code
         """
 
+        self._load_params = load_params
+        self._data_set = data_set
         # call super constructor
-        super(DeltaLoad, self).__init__(execution_system, table)
+        super(DeltaLoad, self).__init__(execution_system, self._data_set)
 
     def build_params(self):
         params = DeltaLoadParams(
-            self._table.db_table_lake,
-            self._table.dir_lake_final,
-            self._table.dir_landing_data,
+            self._data_set.db_table_lake,
+            self._data_set.dir_lake_final,
+            self._data_set.dir_landing_data,
             ["m3d_timestamp", "datapakid", "partno", "record"],
-            self._table.business_key,
-            util.Util.get_partition_columns_list(self._table.partitioned_by),
-            self._table.partition_column,
-            self._table.partition_column_format
+            self._data_set.business_key,
+            util.Util.get_partition_columns_list(self._data_set.partitioned_by),
+            self._data_set.partition_column,
+            self._data_set.partition_column_format
         )
         return params
 
@@ -37,10 +40,10 @@ class DeltaLoad(LoadHadoop):
         return ScalaClasses.DELTA_LOAD
 
     def _get_remote_config_dir(self):
-        return self._table.dir_apps_delta_load
+        return self._data_set.dir_apps_delta_load
 
     def _get_load_load_tag(self):
-        return self._table.config_service.tag_delta_load
+        return self._data_set.config_service.tag_delta_load
 
 
 class DeltaLoadParams(object):

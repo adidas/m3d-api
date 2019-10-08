@@ -175,20 +175,11 @@ class M3D(object):
             emr_cluster_id=None,
             spark_params=None
     ):
-        # create abstract table object to retrieve source technology
-        abstract_table = Table(
-            config,
-            cluster_mode,
-            destination_system,
-            destination_database,
-            destination_environment,
-            destination_table
-        )
-        destination_system_technology = abstract_table.get_destination_technology()
+        ds = DataSystem(config, cluster_mode, destination_system, destination_database, destination_environment)
 
         # hadoop
-        if destination_system_technology == DataSystem.SystemTechnology.HIVE:
-            if abstract_table.storage_type == DataSystem.StorageType.S3:
+        if ds.database_type == DataSystem.DatabaseType.EMR:
+            if ds.storage_type == DataSystem.StorageType.S3:
                 from m3d.hadoop.load.load_executor_hadoop import LoadExecutorHadoop
                 LoadExecutorHadoop.create(
                     config_path=config,
@@ -201,11 +192,10 @@ class M3D(object):
                     emr_cluster_id=emr_cluster_id,
                     spark_params_str=spark_params
                 ).run()
-
             else:
-                raise m3d_exceptions.M3DUnsupportedStorageException(abstract_table.storage_type)
+                raise m3d_exceptions.M3DUnsupportedStorageException(ds.storage_type)
         else:
-            raise m3d_exceptions.M3DUnsupportedDestinationSystemException(destination_system_technology)
+            raise m3d_exceptions.M3DUnsupportedDatabaseTypeException(ds.database_type)
 
     @staticmethod
     def truncate_table(

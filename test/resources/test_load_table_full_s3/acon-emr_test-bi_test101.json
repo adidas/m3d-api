@@ -1,5 +1,6 @@
 {
     "parameters": {
-        "null_value": "\\N"
+        "null_value": "\\N",
+        "data_type": "structured"
     }
 }

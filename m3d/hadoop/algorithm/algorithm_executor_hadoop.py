@@ -24,7 +24,7 @@ class AlgorithmExecutorHadoop(SparkExecutor):
         super(AlgorithmExecutorHadoop, self).__init__(execution_system)
 
         python_class = algorithm_config.get_python_class()
-        available_algorithms = self._get_available_emr_algorithms()
+        available_algorithms = self._get_supported_emr_algorithms()
         if python_class not in available_algorithms:
             raise M3DUnsupportedAlgorithmException(python_class)
 
@@ -43,7 +43,7 @@ class AlgorithmExecutorHadoop(SparkExecutor):
         })
 
     @staticmethod
-    def _get_available_emr_algorithms():
+    def _get_supported_emr_algorithms():
         """
         Return a list of the available EMR algorithms
 
