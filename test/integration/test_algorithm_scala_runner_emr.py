@@ -10,7 +10,6 @@ from test.test_util.concurrent_executor import ConcurrentExecutor
 
 
 class TestAlgorithmScalaRunnerEMR(EMRSystemUnitTestBase):
-    cluster_mode = False
     destination_system = "bdp"
     destination_database = "emr_test"
     destination_environment = "dev"
@@ -77,11 +76,11 @@ class TestAlgorithmScalaRunnerEMR(EMRSystemUnitTestBase):
 
         algorithm_args = [
             m3d_config_file,
-            self.cluster_mode,
             self.destination_system,
             self.destination_database,
             self.destination_environment,
-            self.algorithm_instance
+            self.algorithm_instance,
+            self.emr_cluster_id
         ]
 
         spark_options = {
@@ -94,7 +93,6 @@ class TestAlgorithmScalaRunnerEMR(EMRSystemUnitTestBase):
 
         ext_params_dict = {
             "environment": {
-                "emr_cluster_id": self.emr_cluster_id,
                 "spark": spark_options
             }
         }

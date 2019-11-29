@@ -8,3 +8,4 @@ class ScalaClasses(object):
     PARTITION_FULL_MATERIALIZATION = "PartitionFullMaterialization"
     PARTITION_QUERY_MATERIALIZATION = "PartitionQueryMaterialization"
     PARTITION_RANGE_MATERIALIZATION = "PartitionRangeMaterialization"
+    NESTED_FLATTENER = "NestedFlattener"

@@ -23,7 +23,6 @@ class TestLoadTableFullS3(S3TableTestBase):
         tconx_src_path = \
             "test/resources/test_create_out_view_hive/test_empty_table_lakeout/config/empty_tabl_cd_lakeout.json"
 
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -52,7 +51,6 @@ class TestLoadTableFullS3(S3TableTestBase):
 
         table_config = [
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -66,7 +64,6 @@ class TestLoadTableFullS3(S3TableTestBase):
         bucket_application = scon_emr_dict["environments"][destination_environment]["s3_buckets"]["application"]
         emr_system = EMRSystem(
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment
@@ -124,7 +121,6 @@ class TestLoadTableFullS3(S3TableTestBase):
             "test/resources/test_create_out_view_hive/test_empty_table_lakeout/config/empty_tabl_cd_lakeout.json"
         acon_src_path = "test/resources/test_load_table_full_s3/acon-emr_test-bi_test101.json"
 
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -159,7 +155,6 @@ class TestLoadTableFullS3(S3TableTestBase):
 
         table_config = [
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -173,7 +168,6 @@ class TestLoadTableFullS3(S3TableTestBase):
 
         emr_system = EMRSystem(
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment

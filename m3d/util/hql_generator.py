@@ -34,7 +34,7 @@ class HQLGenerator(object):
         def __init__(self, table_name, table_location, columns):
             self._table_name = table_name
             self._columns = columns
-            self._partition_columns = []
+            self._target_partitions = []
             self._table_properties = {}
 
             # Making sure that table_location has exactly one trailing slash.
@@ -47,11 +47,11 @@ class HQLGenerator(object):
                 self._table_properties = tbl_properties
             return self
 
-        def partitioned_by(self, partition_columns):
-            if partition_columns is None:
-                self._partition_columns = []
+        def partitioned_by(self, target_partitions):
+            if target_partitions is None:
+                self._target_partitions = []
             else:
-                self._partition_columns = partition_columns
+                self._target_partitions = target_partitions
             return self
 
         def build(self, is_external=True):
@@ -67,9 +67,9 @@ class HQLGenerator(object):
                     return ""
 
             def make_partition_by_str():
-                if len(self._partition_columns) > 0:
+                if len(self._target_partitions) > 0:
                     return "PARTITIONED BY ({partition_column_definitions})".format(
-                        partition_column_definitions=self._get_columns_as_string(self._partition_columns)
+                        partition_column_definitions=self._get_columns_as_string(self._target_partitions)
                     )
                 else:
                     return ""
@@ -230,10 +230,10 @@ class HQLGenerator(object):
         return HQLGenerator.Statement(hql_statement)
 
     @staticmethod
-    def generate_insert_as_select(target_table, select_statement, partition_columns=None):
+    def generate_insert_as_select(target_table, select_statement, target_partitions=None):
         def make_partition_str():
-            if partition_columns is not None and len(partition_columns) > 0:
-                return "PARTITION({})".format(", ".join(partition_columns))
+            if target_partitions is not None and len(target_partitions) > 0:
+                return "PARTITION({})".format(", ".join(target_partitions))
             else:
                 return ""
 

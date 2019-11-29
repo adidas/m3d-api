@@ -51,6 +51,7 @@ class EMRSystem(DataSystem):
         ALGORITHM_CLASS = "AlgorithmClass"
         SOURCE_TABLE = "SourceTable"
         TARGET_TABLE = "TargetTable"
+        TARGET_DATASET = "TargetDataset"
         SOURCE_VIEW = "SourceView"
         TARGET_VIEW = "TargetView"
         LOAD_TYPE = "LoadType"
@@ -65,7 +66,6 @@ class EMRSystem(DataSystem):
     def __init__(
             self,
             config,
-            cluster_mode,
             source_system,
             database,
             environment,
@@ -76,7 +76,6 @@ class EMRSystem(DataSystem):
         Initialize Hadoop system
 
         :param config: system config file
-        :param cluster_mode: flag for cluster mode
         :param source_system: destination system code
         :param database: destination database code
         :param environment: destination schema code
@@ -85,10 +84,12 @@ class EMRSystem(DataSystem):
         """
 
         # call super constructor
-        super(EMRSystem, self).__init__(config, cluster_mode, source_system, database, environment)
+        super(EMRSystem, self).__init__(config, source_system, database, environment)
+
+        self.scon_full_path = self.config_service.get_scon_path(source_system, database)
 
         # system config files
-        with open(self.config_service.get_scon_path(cluster_mode, source_system, database)) as data_file:
+        with open(self.scon_full_path) as data_file:
             params_system = json.load(data_file)
 
         # S3 buckets
@@ -217,6 +218,18 @@ class EMRSystem(DataSystem):
         full_table_name = "{}.{}".format(self.db_lake, destination_table)
         self.add_cluster_tag(self.EMRClusterTag.TARGET_TABLE, full_table_name)
         S3Table(self, destination_table).drop_tables()
+
+    def drop_dataset(self, destination_dataset):
+        """
+        Semi-structured datasets are not associated with any Hive metadata and therefore we cannot drop
+        and truncate them like tables. So, this function drops a semi-structured dataset.
+        All landing and lake data and folders associated with the dataset will be permanently deleted.
+        :param destination_dataset: dataset to drop
+        """
+        from m3d.hadoop.dataset.semistructured_dataset import SemistructuredDataSet
+        full_dataset_name = "{}.{}".format(self.db_lake, destination_dataset)
+        self.add_cluster_tag(self.EMRClusterTag.TARGET_DATASET, full_dataset_name)
+        SemistructuredDataSet(self, destination_dataset).drop_datasets()
 
     def create_lake_out_view(self, destination_table):
         from m3d.hadoop.emr.s3_table import S3Table
@@ -423,7 +436,6 @@ class EMRSystem(DataSystem):
     def from_data_system(data_system, emr_cluster_id):
         return EMRSystem(
             data_system.config,
-            data_system.cluster_mode,
             data_system.source_system,
             data_system.database,
             data_system.environment,

@@ -21,18 +21,17 @@ class DataSystem(abstract_system.AbstractSystem):
     class DirectoryName(object):
         DATA_BACKUP = "data_backup/"
 
-    def __init__(self, config, cluster_mode, source_system, database, environment):
+    def __init__(self, config, source_system, database, environment):
         """
         Initialize System Config
 
         :param config: global system config file
-        :param cluster_mode: flag for cluster mode
         :param source_system: system code
         :param database: database code
         :param environment: environment code
         """
         # call super constructor
-        super(DataSystem, self).__init__(config, cluster_mode, source_system, database)
+        super(DataSystem, self).__init__(config, source_system, database)
 
         # store parameters
         self.environment = environment
@@ -52,7 +51,7 @@ class DataSystem(abstract_system.AbstractSystem):
         self.db_stages = None
 
         # open system config file
-        with open(self.config_service.get_scon_path(cluster_mode, source_system, database)) as data_file:
+        with open(self.config_service.get_scon_path(source_system, database)) as data_file:
             params = json.load(data_file)
 
         self.database_type = params["database_type"]

@@ -8,7 +8,6 @@ import logging.config
 
 from m3d import M3D
 
-
 MANDATORY_ARGS = "mandatory_arguments"
 OPTIONAL_ARGS = "optional_arguments"
 
@@ -63,8 +62,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Wrapper for schema creation')
     parser.add_argument('-function', action="store", dest="function", help="function to be executed")
     parser.add_argument('-config', action="store", dest="config", help="global system config file")
-    parser.add_argument('-cluster_mode', action="store", dest="cluster_mode", default="False",
-                        help="flag indicating cluster execution")
     parser.add_argument('-destination_system', action="store",
                         dest="destination_system", help="destination system code")
     parser.add_argument('-destination_database', action="store",
@@ -73,6 +70,8 @@ if __name__ == "__main__":
                         dest="destination_environment", help="destination environment code")
     parser.add_argument('-destination_table', action="store",
                         dest="destination_table", help="destination table code")
+    parser.add_argument('-destination_dataset', action="store",
+                        dest="destination_dataset", help="destination dataset code")
     parser.add_argument('-algorithm_instance', action="store",
                         dest="algorithm_instance", help="algorithm instance code")
     parser.add_argument('-load_type', action='store', dest="load_type", default="FullLoad",
@@ -89,61 +88,61 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # cast cluster mode to bool
-    if args.cluster_mode is not None:
-        args.cluster_mode = str(args.cluster_mode) == "True"
-        logging.info("cluster_mode is set to {}.".format(args.cluster_mode))
-
     # check if function is missing
     if args.function is None:
         raise Exception("Required arguments: -function")
 
     api = {
         "create_table": {
-            MANDATORY_ARGS: ["config", "cluster_mode", "destination_system", "destination_database",
+            MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "destination_table"],
             OPTIONAL_ARGS: ["emr_cluster_id"]
         },
         "drop_table": {
-            MANDATORY_ARGS: ["config", "cluster_mode", "destination_system", "destination_database",
+            MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "destination_table"],
             OPTIONAL_ARGS: ["emr_cluster_id"]
         },
         "load_table": {
-            MANDATORY_ARGS: ["config", "cluster_mode", "destination_system", "destination_database",
+            MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "destination_table",
                              "load_type"],
             OPTIONAL_ARGS: ["emr_cluster_id", "spark_params"]
         },
         "truncate_table": {
-            MANDATORY_ARGS: ["config", "cluster_mode", "destination_system", "destination_database",
+            MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "destination_table"],
             OPTIONAL_ARGS: ["emr_cluster_id"]
         },
         "create_lake_out_view": {
-            MANDATORY_ARGS: ["config", "cluster_mode", "destination_system", "destination_database",
+            MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "destination_table"],
             OPTIONAL_ARGS: ["emr_cluster_id"]
         },
         "drop_lake_out_view": {
-            MANDATORY_ARGS: ["config", "cluster_mode", "destination_system", "destination_database",
+            MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "destination_table"],
             OPTIONAL_ARGS: ["emr_cluster_id"]
         },
         "run_algorithm": {
-            MANDATORY_ARGS: ["config", "cluster_mode", "destination_system", "destination_database",
+            MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "algorithm_instance"],
             OPTIONAL_ARGS: ["ext_params"]
         },
         "create_emr_cluster": {
-            MANDATORY_ARGS: ["config", "cluster_mode", "destination_system", "destination_database",
+            MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "core_instance_count", "core_instance_type",
                              "master_instance_type"],
             OPTIONAL_ARGS: ["emr_version", "ebs_size"]
         },
         "delete_emr_cluster": {
-            MANDATORY_ARGS: ["config", "cluster_mode", "destination_system", "destination_database",
+            MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "emr_cluster_id"]
+        },
+        "drop_dataset": {
+            MANDATORY_ARGS: ["config", "destination_system", "destination_database",
+                             "destination_environment", "destination_dataset"],
+            OPTIONAL_ARGS: ["emr_cluster_id"]
         }
     }
 

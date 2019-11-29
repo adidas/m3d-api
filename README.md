@@ -46,7 +46,7 @@ Graphically, the architecture of M3D looks like this:
 
 ### AWS Prerequisites for Out of the Box Usage
 
-*   You will need to create three S3 buckets: **inbound**, **landing**, **lake** and **application**. The latter will contain the jar artifact from the M3D-engine.
+*   You will need to create four S3 buckets: **inbound**, **landing**, **lake** and **application**. The latter will contain the jar artifact from the M3D-engine.
 *   An account for managing clusters in the AWS console.
 *   A host machine with internet access.
 *   An access key with permissions to write to the specified buckets and to create/delete EMR clusters.
@@ -172,15 +172,14 @@ The steps are the following:
         -destination_system emr \
         -destination_database emr_database \
         -destination_environment test \
-        -destination_table table_name 
-        -cluster_mode False \
+        -destination_table table_name \
         -emr_cluster_id id-of-started-cluster
     ```
     
 *   Trigger the FullLoad algorithm in M3D-engine to load from inbound into lake layer.
-    ```python m3d_main.py -function load_table \
+    ```
+    python m3d_main.py -function load_table \
         -config /relative/to/m3d-api/config/m3d/config.json \
-        -cluster_mode False \
         -destination_system emr \
         -destination_database emr_database \
         -destination_environment test \
@@ -193,7 +192,6 @@ The steps are the following:
     ```
     python m3d_main.py -function delete_emr_cluster \
         -config /relative/to/m3d-api/config/m3d/config.json \
-        -cluster_mode False \
         -destination_system emr \
         -destination_database emr_database \
         -destination_environment test \

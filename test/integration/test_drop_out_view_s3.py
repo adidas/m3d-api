@@ -15,7 +15,6 @@ class TestDropOutViewS3Integration(S3TableTestBase):
     @patch("moto.emr.models.ElasticMapReduceBackend.describe_step", return_value=FakeStep("COMPLETED"))
     @patch("m3d.hadoop.emr.emr_cluster_client.EMRClusterClient._do_add_emr_cluster_tags")
     def test_check_s3_cleanup(self, add_tags_patch, _):
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -32,7 +31,6 @@ class TestDropOutViewS3Integration(S3TableTestBase):
 
         table_config_args = [
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,

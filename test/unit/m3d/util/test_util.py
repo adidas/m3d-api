@@ -15,33 +15,33 @@ class TestUtil(object):
         ])
 
     @pytest.mark.bdp
-    def test_get_partition_columns_list(self):
+    def test_get_target_partitions_list(self):
         """
         This method tests the correct functionality of get_partition_column_list of Util class
         :return:
         """
-        assert Util.get_partition_columns_list("year") == ["year"]
-        assert Util.get_partition_columns_list("month") == ["year", "month"]
-        assert Util.get_partition_columns_list("day") == ["year", "month", "day"]
-        assert Util.get_partition_columns_list("") == []
+        assert Util.get_target_partitions_list("year") == ["year"]
+        assert Util.get_target_partitions_list("month") == ["year", "month"]
+        assert Util.get_target_partitions_list("day") == ["year", "month", "day"]
+        assert Util.get_target_partitions_list("") == []
 
         with pytest.raises(Exception) as exc_info:
-            Util.get_partition_columns_list("country")
+            Util.get_target_partitions_list("country")
         assert "Partition type country not supported" in str(exc_info.value)
 
     @pytest.mark.bdp
-    def test_get_partition_columns_string(self):
+    def test_get_target_partitions_string(self):
         """
         This method tests the correct functionality of get_partition_column_string of Util class
         :return:
         """
-        assert Util.get_partition_columns_string("year") == "year"
-        assert Util.get_partition_columns_string("month") == "year,month"
-        assert Util.get_partition_columns_string("day") == "year,month,day"
-        assert Util.get_partition_columns_string("") == ""
+        assert Util.get_target_partitions_string("year") == "year"
+        assert Util.get_target_partitions_string("month") == "year,month"
+        assert Util.get_target_partitions_string("day") == "year,month,day"
+        assert Util.get_target_partitions_string("") == ""
 
         with pytest.raises(Exception) as exc_info:
-            Util.get_partition_columns_list("country")
+            Util.get_target_partitions_list("country")
         assert "Partition type country not supported" in str(exc_info.value)
 
     @pytest.mark.bdp
@@ -50,13 +50,13 @@ class TestUtil(object):
         This method tests the correct functionality of get_partition_column_string of Util class
         :return:
         """
-        assert Util.get_defined_partition_columns_hive("year") == "year smallint"
-        assert Util.get_defined_partition_columns_hive("month") == "year smallint,month smallint"
-        assert Util.get_defined_partition_columns_hive("day") == "year smallint,month smallint,day smallint"
-        assert Util.get_defined_partition_columns_hive("") == ""
+        assert Util.get_defined_target_partitions_hive("year") == "year smallint"
+        assert Util.get_defined_target_partitions_hive("month") == "year smallint,month smallint"
+        assert Util.get_defined_target_partitions_hive("day") == "year smallint,month smallint,day smallint"
+        assert Util.get_defined_target_partitions_hive("") == ""
 
         with pytest.raises(Exception) as exc_info:
-            Util.get_partition_columns_list("country")
+            Util.get_target_partitions_list("country")
         assert "Partition type country not supported" in str(exc_info.value)
 
     @pytest.mark.bdp

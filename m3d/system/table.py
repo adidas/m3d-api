@@ -94,12 +94,11 @@ class Table(data_system.DataSystem):
     INIT_TYPE_FLAG = "inittype"
     INIT_PAYLOAD = "initpayload"
 
-    def __init__(self, config, cluster_mode, source_system, database, environment, table, **kwargs):
+    def __init__(self, config, source_system, database, environment, table, **kwargs):
         """
         Initialize table config
 
         :param config: system config file
-        :param cluster_mode: flag for cluster mode
         :param source_system: system code
         :param database: database code
         :param environment: environment code
@@ -107,7 +106,7 @@ class Table(data_system.DataSystem):
         """
 
         # call super constructor
-        super(Table, self).__init__(config, cluster_mode, source_system, database, environment)
+        super(Table, self).__init__(config, source_system, database, environment)
 
         if not kwargs:
             kwargs[Table.INIT_TYPE_FLAG] = TconxTableInitType.FROM_JSON_FILE
@@ -136,7 +135,7 @@ class Table(data_system.DataSystem):
             if init_type == TconxTableInitType.FROM_PROVIDED_JSON:
                 tconx_file_path = tconx_provided_file_name + ".json"
             else:
-                tconx_file_path = self.config_service.get_tconx_path(self.cluster_mode, source_system, database,
+                tconx_file_path = self.config_service.get_tconx_path(source_system, database,
                                                                      environment, table)
             if init_type == TconxTableInitType.FROM_PROVIDED_JSON:
                 with open(tconx_file_path, 'w') as writer:
@@ -281,7 +280,7 @@ class Table(data_system.DataSystem):
     def get_projection_columns(self, src_column_names, destination_column_names):
         columns = list(filter(lambda x: x[1], zip(src_column_names, destination_column_names)))
         if self.partitioned_by in Util.defined_partitions:
-            partition_columns = list(map(lambda x: (x, x), Util.get_partition_columns_list(self.partitioned_by)))
-            return columns + partition_columns
+            target_partitions = list(map(lambda x: (x, x), Util.get_target_partitions_list(self.partitioned_by)))
+            return columns + target_partitions
         else:
             return columns

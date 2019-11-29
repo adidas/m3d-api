@@ -16,7 +16,6 @@ class S3Table(HiveTable):
         Initialize representation of Hive table on S3
 
         :param config: system config file
-        :param cluster_mode: flag for cluster mode
         :param destination_system: destination system code
         :param destination_database: destination database code
         :param destination_environment: destination environment code
@@ -28,7 +27,6 @@ class S3Table(HiveTable):
         # call super constructor
         super(S3Table, self).__init__(
             emr_system.config,
-            emr_system.cluster_mode,
             emr_system.source_system,
             emr_system.database,
             emr_system.environment,

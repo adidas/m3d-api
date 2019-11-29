@@ -66,7 +66,6 @@ class TestLoadTableDeltaS3(S3TableTestBase):
     def test_load_table_delta(self, remove_json_patch, add_tags_patch, _0, _1):
         # responses.add_passthru(self.default_server_url)
 
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -102,7 +101,6 @@ class TestLoadTableDeltaS3(S3TableTestBase):
 
         emr_system = EMRSystem(
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment
@@ -121,7 +119,6 @@ class TestLoadTableDeltaS3(S3TableTestBase):
 
         M3D.load_table(
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -155,11 +152,11 @@ class TestLoadTableDeltaS3(S3TableTestBase):
         assert load_table_parameters["business_key"] == s3_table_active.business_key
 
         if s3_table_active.partitioned_by in Util.defined_partitions:
-            partition_columns = Util.get_partition_columns_list(s3_table_active.partitioned_by)
+            target_partitions = Util.get_target_partitions_list(s3_table_active.partitioned_by)
         else:
-            partition_columns = s3_table_active.partitioned_by
+            target_partitions = s3_table_active.partitioned_by
 
-        assert load_table_parameters["partition_columns"] == partition_columns
+        assert load_table_parameters["target_partitions"] == target_partitions
         assert load_table_parameters["partition_column"] == s3_table_active.partition_column
         assert load_table_parameters["partition_column_format"] == s3_table_active.partition_column_format
 
@@ -205,7 +202,6 @@ class TestLoadTableDeltaS3(S3TableTestBase):
     def test_load_table_delta_external_spark_parameters(self, remove_json_patch, _0, _1):
         # responses.add_passthru(self.default_server_url)
 
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -240,7 +236,6 @@ class TestLoadTableDeltaS3(S3TableTestBase):
 
         emr_system = EMRSystem(
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment
@@ -259,7 +254,6 @@ class TestLoadTableDeltaS3(S3TableTestBase):
 
         M3D.load_table(
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -293,11 +287,11 @@ class TestLoadTableDeltaS3(S3TableTestBase):
         assert load_table_parameters["business_key"] == s3_table_active.business_key
 
         if s3_table_active.partitioned_by in Util.defined_partitions:
-            partition_columns = Util.get_partition_columns_list(s3_table_active.partitioned_by)
+            target_partitions = Util.get_target_partitions_list(s3_table_active.partitioned_by)
         else:
-            partition_columns = s3_table_active.partitioned_by
+            target_partitions = s3_table_active.partitioned_by
 
-        assert load_table_parameters["partition_columns"] == partition_columns
+        assert load_table_parameters["target_partitions"] == target_partitions
         assert load_table_parameters["partition_column"] == s3_table_active.partition_column
         assert load_table_parameters["partition_column_format"] == s3_table_active.partition_column_format
         # Check EMR steps.

@@ -80,6 +80,7 @@
     "hadoop",
     "hadoop/core",
     "hadoop/emr",
+    "hadoop/dataset",
     "hadoop/algorithm",
     "hadoop/load",
     "system",

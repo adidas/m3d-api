@@ -17,7 +17,6 @@ class TestCreateTableS3(S3TableTestBase):
     def test_check_hql(self, add_tags_patch, _):
         logging.info("Starting TestCreateTableS3.test_check_hql()")
 
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -34,7 +33,6 @@ class TestCreateTableS3(S3TableTestBase):
 
         table_config = [
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,

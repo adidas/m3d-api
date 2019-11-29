@@ -63,11 +63,10 @@ class ConfigService(object):
         # TODO: Remove hdfs tag from config
         self.tag_file = params["tags"]["file"]
 
-    def get_scon_path(self, cluster_mode, source_system, database):
+    def get_scon_path(self, source_system, database):
         """
         Return system config file path
 
-        :param cluster_mode: flag for cluster mode
         :param source_system: system code
         :param database: database code
 
@@ -82,14 +81,11 @@ class ConfigService(object):
         )
 
         base_path = os.path.join(self.tag_config, self.tag_system, filename)
-        if cluster_mode:
-            return os.path.join(self.subdir_projects_m3d_api, base_path)
-        else:
-            return base_path
+
+        return base_path
 
     def get_tconx_path(
             self,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -98,7 +94,6 @@ class ConfigService(object):
         """
         Return TCONX file path
 
-        :param cluster_mode: flag for cluster mode
         :param destination_system: destination system code
         :param destination_database: destination database code
         :param destination_environment: destination environment code
@@ -126,10 +121,7 @@ class ConfigService(object):
             filename
         )
 
-        if cluster_mode:
-            return os.path.join(self.subdir_projects_m3d_api, base_path)
-        else:
-            return base_path
+        return base_path
 
     def get_hql_path(self, destination_system, destination_database, destination_environment, destination_view):
         """
@@ -162,11 +154,10 @@ class ConfigService(object):
 
         return base_path
 
-    def get_acon_path(self, cluster_mode, destination_database, destination_environment, algorithm_instance):
+    def get_acon_path(self, destination_database, destination_environment, algorithm_instance):
         """
         Return algorithm config file path
 
-        :param cluster_mode: flag for cluster mode
         :param destination_database: destination database code
         :param destination_environment: destination environment code
         :param algorithm_instance: algorithm instance code
@@ -188,16 +179,13 @@ class ConfigService(object):
             destination_environment,
             filename
         )
-        if cluster_mode:
-            return os.path.join(self.subdir_projects_m3d_api, base_path)
-        else:
-            return base_path
 
-    def get_ddic_path(self, cluster_mode, source_system, src_database, source_schema, source_table):
+        return base_path
+
+    def get_ddic_path(self, source_system, src_database, source_schema, source_table):
         """
         Return ddic path for upload system export
 
-        :param cluster_mode: flag for cluster mode
         :param source_system source system code
         :param src_database source database code
         :param source_schema upload schema code
@@ -213,7 +201,5 @@ class ConfigService(object):
         ]) + ConfigService.Extensions.CSV
 
         base_path = os.path.join(self.tag_config, self.tag_table, self.tag_upload, source_system, filename)
-        if cluster_mode:
-            return os.path.join(self.subdir_projects_m3d_api, base_path)
-        else:
-            return base_path
+
+        return base_path

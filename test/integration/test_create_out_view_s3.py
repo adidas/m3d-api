@@ -19,7 +19,6 @@ class TestCreateOutViewS3(S3TableTestBase):
         tconx_src_path = \
             "test/resources/test_create_out_view_hive/test_empty_table_lakeout/config/empty_tabl_cd_lakeout.json"
 
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -39,7 +38,6 @@ class TestCreateOutViewS3(S3TableTestBase):
 
         table_config = [
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -60,7 +58,6 @@ class TestCreateOutViewS3(S3TableTestBase):
         tconx_src_path = \
             "test/resources/test_create_out_view_hive/test_empty_columns_lakeout/config/empty_cols_cd_lakeout.json"
 
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -80,7 +77,6 @@ class TestCreateOutViewS3(S3TableTestBase):
 
         table_config = [
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -108,7 +104,6 @@ class TestCreateOutViewS3(S3TableTestBase):
     def test_lakeout_view_hql(self, add_tags_patch):
         tconx_src_path = "test/resources/test_create_out_view_hive/test_lakeout_view_structure/config/tconx.json"
 
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -128,7 +123,6 @@ class TestCreateOutViewS3(S3TableTestBase):
 
         table_config = [
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,

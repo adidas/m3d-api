@@ -21,7 +21,6 @@ class TestDropTableS3Integration(S3TableTestBase):
 
         logging.info("Starting s3 Checkup cleanup")
 
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -38,7 +37,6 @@ class TestDropTableS3Integration(S3TableTestBase):
 
         table_config_args = [
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,

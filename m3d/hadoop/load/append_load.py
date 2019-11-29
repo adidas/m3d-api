@@ -5,18 +5,18 @@ from m3d.hadoop.load.load_hadoop import LoadHadoop
 
 
 class AppendLoad(LoadHadoop):
-    def __init__(self, execution_system, data_set, load_params):
+    def __init__(self, execution_system, dataset, load_params):
         """
         Initialize append load class for S3 tables.
 
         :param execution_system an instance of EMRSystem
-        :param data_set: destination table
+        :param dataset: destination table
         """
 
-        self.data_set = data_set
+        self.dataset = dataset
         self.load_params = load_params
 
-        super(AppendLoad, self).__init__(execution_system, data_set)
+        super(AppendLoad, self).__init__(execution_system, dataset)
 
     def build_params(self):
         null_value = self.load_params.get("null_value", None)
@@ -27,23 +27,26 @@ class AppendLoad(LoadHadoop):
         compute_table_statistics = self.load_params.get("compute_table_statistics", None)
         # data_type can be one of DataType.STRUCTURED, DataType.SEMISTRUCTURED or DataType.UNSTRUCTURED
         data_type = self.load_params.get("data_type", None)
+        reader_mode = self.load_params.get("reader_mode", None)
+        metadata_update_strategy = self.load_params.get("metadata_update_strategy", None)
 
-        if hasattr(self._data_set, "delimiter"):
-            delimiter = bytes(self._data_set.delimiter, "utf-8").decode("unicode_escape")
+        if hasattr(self._dataset, "delimiter"):
+            delimiter = bytes(self._dataset.delimiter, "utf-8").decode("unicode_escape")
         else:
             delimiter = None
 
-        if hasattr(self._data_set, "header_lines"):
-            has_header = int(self._data_set.header_lines) > 0
+        if hasattr(self._dataset, "header_lines"):
+            has_header = int(self._dataset.header_lines) > 0
         else:
             has_header = None
 
         params = AppendLoadConfiguration(
-            self._data_set.db_table_lake,
-            self._data_set.dir_landing_final,
-            self._data_set.dir_landing_header,
-            self.load_params["partition_columns"],
+            self._dataset.db_table_lake,
+            self._dataset.dir_landing_final,
+            self._dataset.dir_landing_header,
+            self.load_params["target_partitions"],
             self.load_params["regex_filename"],
+            metadata_update_strategy=metadata_update_strategy,
             file_format=file_format,
             delimiter=delimiter,
             has_header=has_header,
@@ -52,8 +55,9 @@ class AppendLoad(LoadHadoop):
             compute_table_statistics=compute_table_statistics,
             schema=schema,
             verify_schema=verify_schema,
-            target_dir=self._data_set.dir_lake_final,
-            data_type=data_type
+            target_dir=self._dataset.dir_lake_final,
+            data_type=data_type,
+            reader_mode=reader_mode
         )
 
         self._validate_params(params)
@@ -66,16 +70,16 @@ class AppendLoad(LoadHadoop):
         return HiveTable.TableLoadType.APPEND
 
     def _get_remote_config_dir(self):
-        return self._data_set.dir_apps_append_load
+        return self._dataset.dir_apps_append_load
 
     def _get_load_load_tag(self):
-        return self._data_set.config_service.tag_append_load
+        return self._dataset.config_service.tag_append_load
 
     @staticmethod
     def _validate_params(params):
-        if len(params.partition_columns) != len(params.regex_filename):
-            message = "Lengths of partition_columns and regex_filename do not match:\n{}\n{}".format(
-                params.partition_columns,
+        if len(params.target_partitions) != len(params.regex_filename):
+            message = "Lengths of target_partitions and regex_filename do not match:\n{}\n{}".format(
+                params.target_partitions,
                 params.regex_filename
             )
             raise M3DIllegalArgumentException(message)
@@ -88,9 +92,10 @@ class AppendLoadConfiguration(object):
             target_table,
             source_dir,
             header_dir,
-            partition_columns,
+            target_partitions,
             regex_filename,
             file_format,
+            metadata_update_strategy=None,
             delimiter=None,
             has_header=None,
             null_value=None,
@@ -99,15 +104,18 @@ class AppendLoadConfiguration(object):
             schema=None,
             verify_schema=None,
             target_dir=None,
-            data_type=None
+            data_type=None,
+            reader_mode=None
     ):
         self.target_table = target_table
         self.source_dir = source_dir
         self.header_dir = header_dir
-        self.partition_columns = partition_columns
+        self.target_partitions = target_partitions
         self.regex_filename = regex_filename
         self.file_format = file_format
 
+        if metadata_update_strategy is not None:
+            self.metadata_update_strategy = metadata_update_strategy
         if delimiter is not None:
             self.delimiter = delimiter
         if has_header is not None:
@@ -126,3 +134,5 @@ class AppendLoadConfiguration(object):
             self.schema = schema
         if data_type is not None:
             self.data_type = data_type
+        if reader_mode is not None:
+            self.reader_mode = reader_mode
