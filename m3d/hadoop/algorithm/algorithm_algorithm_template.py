@@ -18,8 +18,9 @@ class AlgorithmAlgorithmTemplate(AlgorithmHadoop):
 
         self.source_table = self._execution_system.db_lake + "." + self._parameters["source_table"]
         # you can use a source location as parquet files on the lake instead of a hive table
+        # make sure not the repeat the full path again on the acon file if you have the following concatenation logic
         # self.source_location = os.path.join("s3://",
-        #                                     execution_system.bucket_lake, self._parameters["source_location"])
+        #                                      self._execution_system.bucket_lake, self._parameters["source_location"])
         self.target_table = self._execution_system.db_lake + "." + self._parameters["target_table"]
 
         self.output_dictionary = {

@@ -4,6 +4,7 @@ from m3d.hadoop.algorithm.algorithm_algorithm_template import AlgorithmAlgorithm
 from m3d.hadoop.algorithm.algorithm_configuration_hadoop import AlgorithmConfigurationHadoop
 from m3d.hadoop.algorithm.algorithm_fixed_length_string_extractor import AlgorithmFixedLengthStringExtractor
 from m3d.hadoop.algorithm.algorithm_gzip_decompression_emr import AlgorithmGzipDecompressionEMR
+from m3d.hadoop.algorithm.algorithm_nested_flattener import AlgorithmNestedFlattener
 from m3d.hadoop.algorithm.algorithm_partition_materialization import AlgorithmPartitionMaterialization
 from m3d.hadoop.algorithm.algorithm_scala_runner import AlgorithmScalaRunner
 from m3d.hadoop.core.spark_executor import SparkExecutor
@@ -30,7 +31,7 @@ class AlgorithmExecutorHadoop(SparkExecutor):
 
         self._spark_parameters = algorithm_config.get_spark_params()
         self._algorithm_instance = algorithm_config.get_algorithm_instance()
-        self._algorithm_wrapper = available_algorithms[algorithm_config.get_python_class()](
+        self._algorithm_wrapper = available_algorithms[python_class](
             execution_system=self._execution_system,
             algorithm_instance=algorithm_config.get_algorithm_instance(),
             algorithm_params=algorithm_config.get_algorithm_params()
@@ -57,6 +58,7 @@ class AlgorithmExecutorHadoop(SparkExecutor):
             "AlgorithmPartitionQueryMaterialization": AlgorithmPartitionMaterialization.QueryPartitionMaterialization,
             "AlgorithmPartitionRangeMaterialization": AlgorithmPartitionMaterialization.RangePartitionMaterialization,
             "AlgorithmFixedLengthStringExtractor": AlgorithmFixedLengthStringExtractor,
+            "AlgorithmNestedFlattener": AlgorithmNestedFlattener,
             "AlgorithmAlgorithmTemplate": AlgorithmAlgorithmTemplate
         }
 
@@ -109,31 +111,29 @@ class AlgorithmExecutorHadoop(SparkExecutor):
     @staticmethod
     def create(
             config_path,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
             algorithm_instance,
+            emr_cluster_id,
             ext_params_str
     ):
         data_system = DataSystem(
             config_path,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment
         )
         if data_system.database_type == DataSystem.DatabaseType.EMR:
-            config = AlgorithmConfigurationHadoop.create_with_ext_params(
+            config = AlgorithmConfigurationHadoop.create(
                 config_path,
-                cluster_mode,
                 destination_database,
                 destination_environment,
                 algorithm_instance,
                 ext_params_str
             )
 
-            execution_system = EMRSystem.from_data_system(data_system, config.get_emr_cluster_id())
+            execution_system = EMRSystem.from_data_system(data_system, emr_cluster_id)
             return AlgorithmExecutorHadoop(execution_system, config)
         else:
             raise M3DUnsupportedDatabaseTypeException(data_system.database_type)

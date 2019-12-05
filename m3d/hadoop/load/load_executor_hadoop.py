@@ -6,7 +6,7 @@ from m3d.exceptions.m3d_exceptions import M3DUnsupportedDatabaseTypeException, M
     M3DUnsupportedDataTypeException
 from m3d.hadoop.core.hive_table import HiveTable
 from m3d.hadoop.core.spark_executor import SparkExecutor
-from m3d.hadoop.dataset.data_set_factory import DataSetFactory
+from m3d.hadoop.dataset.dataset_factory import DataSetFactory
 from m3d.hadoop.emr.emr_system import EMRSystem
 from m3d.hadoop.load.append_load import AppendLoad
 from m3d.hadoop.load.delta_load import DeltaLoad
@@ -62,7 +62,7 @@ class LoadExecutorHadoop(SparkExecutor):
         else:
             data_type = DataType.STRUCTURED
 
-        data_set = DataSetFactory.create_data_set(
+        dataset = DataSetFactory.create_dataset(
             execution_system,
             load_type,
             data_type,
@@ -71,7 +71,7 @@ class LoadExecutorHadoop(SparkExecutor):
 
         self._load_wrapper = available_loads[load_type](
             execution_system=self._execution_system,
-            data_set=data_set,
+            dataset=dataset,
             load_params=load_params
         )
 
@@ -161,7 +161,6 @@ class LoadExecutorHadoop(SparkExecutor):
     @staticmethod
     def create(
             config_path,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -172,7 +171,6 @@ class LoadExecutorHadoop(SparkExecutor):
     ):
         data_system = DataSystem(
             config_path,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment

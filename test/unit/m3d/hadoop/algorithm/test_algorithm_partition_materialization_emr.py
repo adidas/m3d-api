@@ -16,6 +16,7 @@ class TestAlgorithmPartitionMaterialization(EMRSystemUnitTestBase):
     def test_build_full_materialization_params(self, add_tags_patch):
         view_name = "par_mat_test_view"
         target_partitions = ["year", "month"]
+        metadata_update_strategy = "SparkRecoverPartitionsCustom"
 
         acon_dict = {
             "environment": {
@@ -25,7 +26,8 @@ class TestAlgorithmPartitionMaterialization(EMRSystemUnitTestBase):
                 "python_class": "FullPartitionMaterialization",
                 "parameters": {
                     "view": view_name,
-                    "target_partitions": target_partitions
+                    "target_partitions": target_partitions,
+                    "metadata_update_strategy": metadata_update_strategy
                 }
             }
         }
@@ -45,7 +47,8 @@ class TestAlgorithmPartitionMaterialization(EMRSystemUnitTestBase):
         expected_params = {
             self.KEYS.SOURCE_TABLE: expected_source_view,
             self.KEYS.TARGET_TABLE: expected_target_table,
-            self.KEYS.TARGET_PARTITIONS: target_partitions
+            self.KEYS.TARGET_PARTITIONS: target_partitions,
+            self.KEYS.METADATA_UPDATE_STRATEGY: metadata_update_strategy
         }
         assert generated_params == expected_params
 
@@ -205,7 +208,6 @@ class TestAlgorithmPartitionMaterialization(EMRSystemUnitTestBase):
         ], key=lambda x: x["Key"])
 
     def _create_emr_system(self):
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "prod"
@@ -218,7 +220,6 @@ class TestAlgorithmPartitionMaterialization(EMRSystemUnitTestBase):
         )
         return EMRSystem(
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,

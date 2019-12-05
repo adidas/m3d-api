@@ -4,9 +4,7 @@ from m3d.hadoop.emr.emr_system import EMRSystem
 
 
 class AlgorithmPartitionMaterialization(object):
-
     class BasePartitionMaterialization(AlgorithmHadoop):
-
         class ConfigKeys(object):
             VIEW = "view"
             SOURCE_TABLE = "source_table"
@@ -16,6 +14,7 @@ class AlgorithmPartitionMaterialization(object):
             DATE_FROM = "date_from"
             DATE_TO = "date_to"
             NUMBER_OUTPUT_PARTITIONS = "number_output_partitions"
+            METADATA_UPDATE_STRATEGY = "metadata_update_strategy"
 
         def __init__(self, execution_system, algorithm_instance, algorithm_params):
             """
@@ -34,6 +33,7 @@ class AlgorithmPartitionMaterialization(object):
 
             view_name = self._parameters[self.ConfigKeys.VIEW]
             self.target_partitions = self._parameters[self.ConfigKeys.TARGET_PARTITIONS]
+            self.metadata_update_strategy = self._parameters.get(self.ConfigKeys.METADATA_UPDATE_STRATEGY, None)
             self.source_view = "{}.{}".format(execution_system.db_mart_mod, view_name)
             self.target_table = "{}.{}".format(execution_system.db_mart_cal, view_name)
 
@@ -48,6 +48,11 @@ class AlgorithmPartitionMaterialization(object):
                 self.ConfigKeys.TARGET_TABLE: self.target_table,
                 self.ConfigKeys.TARGET_PARTITIONS: self.target_partitions
             }
+
+            # Optional Parameter(s)
+            if self.metadata_update_strategy is not None:
+                metadata_update = self._parameters[self.ConfigKeys.METADATA_UPDATE_STRATEGY]
+                params.update({self.ConfigKeys.METADATA_UPDATE_STRATEGY: metadata_update})
 
             additional_parameters = self._get_additional_parameters()
             params.update(additional_parameters)

@@ -97,9 +97,8 @@ class TestAlgorithmConfigurationHadoop(UnitTestBase):
 
         with patch('m3d.util.util.Util.load_dict', return_value={}):
             with patch('m3d.util.util.Util.merge_nested_dicts', return_value=test_dict):
-                algorithm_configuration = AlgorithmConfigurationHadoop.create_with_ext_params(
+                algorithm_configuration = AlgorithmConfigurationHadoop.create(
                     config,
-                    False,
                     "bdp_test",
                     "test",
                     "gzip_decompressor_bytes",

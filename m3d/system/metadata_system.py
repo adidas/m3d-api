@@ -5,24 +5,23 @@ from m3d.system import abstract_system
 
 class MetadataSystem(abstract_system.AbstractSystem):
 
-    def __init__(self, config, cluster_mode, source_system, database, schema):
+    def __init__(self, config, source_system, database, schema):
         """
         Initialize Metadata Config
 
         :param config: config file
-        :param cluster_mode: flag for cluster mode
         :param source_system: metadata system code
         :param database: metadata database code
         :param schema: metadata schema code
         """
 
         # call super constructor
-        abstract_system.AbstractSystem.__init__(self, config, cluster_mode, source_system, database)
+        abstract_system.AbstractSystem.__init__(self, config, source_system, database)
 
         # store parameters
         self.schema = schema
 
-        with open(self.config_service.get_scon_path(cluster_mode, source_system, database)) as data_file:
+        with open(self.config_service.get_scon_path(source_system=source_system, database=database)) as data_file:
             self.params_system = json.load(data_file)
 
         self.view_oracle_scn = self.params_system["view_oracle_scn"]

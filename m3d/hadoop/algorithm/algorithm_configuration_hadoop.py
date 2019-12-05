@@ -13,7 +13,6 @@ class AlgorithmConfigurationHadoop(object):
     class Keys(object):
         # environment section
         SPARK = "spark"
-        EMR_CLUSTER_ID = "emr_cluster_id"
 
         # algorithm section
         PYTHON_CLASS = "python_class"
@@ -37,8 +36,6 @@ class AlgorithmConfigurationHadoop(object):
 
         self._python_class = self._algorithm_params[self.Keys.PYTHON_CLASS]
 
-        self._emr_cluster_id = environment_section[self.Keys.EMR_CLUSTER_ID]
-
         # spark params are not mandatory.
         self._spark_params = environment_section.get(self.Keys.SPARK, {})
 
@@ -54,17 +51,13 @@ class AlgorithmConfigurationHadoop(object):
     def get_algorithm_instance(self):
         return self._algorithm_instance
 
-    def get_emr_cluster_id(self):
-        return self._emr_cluster_id
-
     @staticmethod
-    def create_with_ext_params(
+    def create(
             config_path,
-            cluster_mode,
             destination_database,
             destination_environment,
             algorithm_instance,
-            ext_params_str
+            ext_params_str=None
     ):
         """
         Create algorithm configuration object from acon file. Method will discover acon file based on the
@@ -76,7 +69,6 @@ class AlgorithmConfigurationHadoop(object):
         # Create config service to get acon file path.
         config_service = ConfigService(config_path)
         acon_path = config_service.get_acon_path(
-            cluster_mode,
             destination_database,
             destination_environment,
             algorithm_instance
@@ -86,32 +78,5 @@ class AlgorithmConfigurationHadoop(object):
         if ext_params_str:
             ext_params_dict = json.loads(ext_params_str)
             acon_dict = Util.merge_nested_dicts(acon_dict, ext_params_dict)
-
-        return AlgorithmConfigurationHadoop(algorithm_instance, acon_dict)
-
-    @staticmethod
-    def create_with_emr_cluster_id(
-            config_path,
-            cluster_mode,
-            destination_database,
-            destination_environment,
-            algorithm_instance,
-            emr_cluster_id
-    ):
-        """
-        Create algorithm configuration object from acon file. Method will discover acon file based on the
-        parameters passed to it.
-
-        :return: Returns algorithm configuration object of the type that is used for calling the method.
-        """
-
-        # Create config service to get acon file path.
-        config_service = ConfigService(config_path)
-        acon_path = config_service.get_acon_path(
-            cluster_mode, destination_database, destination_environment, algorithm_instance)
-        acon_dict = Util.load_dict(acon_path)
-
-        environment = acon_dict[AlgorithmConfigurationHadoop.Sections.ENVIRONMENT]
-        environment[AlgorithmConfigurationHadoop.Keys.EMR_CLUSTER_ID] = emr_cluster_id
 
         return AlgorithmConfigurationHadoop(algorithm_instance, acon_dict)

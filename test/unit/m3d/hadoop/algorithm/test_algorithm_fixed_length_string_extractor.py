@@ -13,7 +13,8 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
     SOURCE_TABLE = "test_src_table"
     TARGET_TABLE = "test_tgt_table"
     SOURCE_FIELD = "main_value"
-    PARTITION_COLUMNS = ["year", "month"]
+    METADATA_UPDATE_STRATEGY = "SparkRecoverPartitionsCustom"
+    TARGET_PARTITIONS = ["year", "month"]
     SELECT_CONDITIONS = ["year=2019", "month=2"]
     SELECT_RULES = ["month-1"]
     SUBSTRING_POSITIONS = ["10,15", "20, 22"]
@@ -25,9 +26,10 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
             "source_table": self.SOURCE_TABLE,
             "target_table": self.TARGET_TABLE,
             "source_field": self.SOURCE_FIELD,
-            "partition_columns": self.PARTITION_COLUMNS,
+            "target_partitions": self.TARGET_PARTITIONS,
             "select_conditions": self.SELECT_CONDITIONS,
-            "substring_positions": self.SUBSTRING_POSITIONS
+            "substring_positions": self.SUBSTRING_POSITIONS,
+            "metadata_update_strategy": self.METADATA_UPDATE_STRATEGY
         })
 
         emr_system = self._create_emr_system()
@@ -46,8 +48,9 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
             "source_table": expected_full_source_table,
             "target_table": expected_full_target_table,
             "source_field": self.SOURCE_FIELD,
-            "partition_columns": self.PARTITION_COLUMNS,
+            "target_partitions": self.TARGET_PARTITIONS,
             "select_conditions": self.SELECT_CONDITIONS,
+            "metadata_update_strategy": self.METADATA_UPDATE_STRATEGY,
             "substring_positions": self.SUBSTRING_POSITIONS
         }
         assert generated_params == expected_params
@@ -66,7 +69,7 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
             "source_table": self.SOURCE_TABLE,
             "target_table": self.TARGET_TABLE,
             "source_field": self.SOURCE_FIELD,
-            "partition_columns": self.PARTITION_COLUMNS,
+            "target_partitions": self.TARGET_PARTITIONS,
             "select_rules": self.SELECT_RULES,
             "substring_positions": self.SUBSTRING_POSITIONS
         })
@@ -87,7 +90,7 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
             "source_table": expected_full_source_table,
             "target_table": expected_full_target_table,
             "source_field": self.SOURCE_FIELD,
-            "partition_columns": self.PARTITION_COLUMNS,
+            "target_partitions": self.TARGET_PARTITIONS,
             "select_rules": self.SELECT_RULES,
             "substring_positions": self.SUBSTRING_POSITIONS
         }
@@ -107,7 +110,7 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
             "source_table": self.SOURCE_TABLE,
             "target_table": self.TARGET_TABLE,
             "source_field": self.SOURCE_FIELD,
-            "partition_columns": self.PARTITION_COLUMNS,
+            "target_partitions": self.TARGET_PARTITIONS,
             "select_conditions": self.SELECT_CONDITIONS,
             "substring_positions": self.SUBSTRING_POSITIONS
         })
@@ -128,7 +131,7 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
             "source_table": expected_full_source_table,
             "target_table": expected_full_target_table,
             "source_field": self.SOURCE_FIELD,
-            "partition_columns": self.PARTITION_COLUMNS,
+            "target_partitions": self.TARGET_PARTITIONS,
             "select_conditions": self.SELECT_CONDITIONS,
             "substring_positions": self.SUBSTRING_POSITIONS
         }
@@ -184,7 +187,7 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
         acon_dict = self._create_acon_dict({
             "target_table": self.TARGET_TABLE,
             "source_field": self.SOURCE_FIELD,
-            "partition_columns": self.PARTITION_COLUMNS,
+            "target_partitions": self.TARGET_PARTITIONS,
             "select_conditions": self.SELECT_CONDITIONS,
             "substring_positions": self.SUBSTRING_POSITIONS
         })
@@ -207,7 +210,7 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
         acon_dict = self._create_acon_dict({
             "source_table": self.SOURCE_TABLE,
             "source_field": self.SOURCE_FIELD,
-            "partition_columns": self.PARTITION_COLUMNS,
+            "target_partitions": self.TARGET_PARTITIONS,
             "select_conditions": self.SELECT_CONDITIONS,
             "substring_positions": self.SUBSTRING_POSITIONS
         })
@@ -230,7 +233,7 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
         acon_dict = self._create_acon_dict({
             "source_table": self.SOURCE_TABLE,
             "target_table": self.TARGET_TABLE,
-            "partition_columns": self.PARTITION_COLUMNS,
+            "target_partitions": self.TARGET_PARTITIONS,
             "select_conditions": self.SELECT_CONDITIONS,
             "substring_positions": self.SUBSTRING_POSITIONS
         })
@@ -254,7 +257,7 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
             "source_table": self.SOURCE_TABLE,
             "target_table": self.TARGET_TABLE,
             "source_field": self.SOURCE_FIELD,
-            "partition_columns": self.PARTITION_COLUMNS,
+            "target_partitions": self.TARGET_PARTITIONS,
             "select_conditions": self.SELECT_CONDITIONS
         })
 
@@ -277,7 +280,7 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
             "source_table": self.SOURCE_TABLE,
             "target_table": self.TARGET_TABLE,
             "source_field": self.SOURCE_FIELD,
-            "partition_columns": self.PARTITION_COLUMNS,
+            "target_partitions": self.TARGET_PARTITIONS,
             "select_conditions": self.SELECT_CONDITIONS,
             "select_rules": self.SELECT_RULES,
             "substring_positions": self.SUBSTRING_POSITIONS
@@ -342,7 +345,6 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
         assert str(ex_info.value).startswith("Unable to use select_conditions for unpartitioned table")
 
     def _create_emr_system(self):
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "prod"
@@ -355,7 +357,6 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
         )
         return EMRSystem(
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,

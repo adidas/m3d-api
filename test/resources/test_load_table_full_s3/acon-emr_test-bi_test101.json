@@ -1,6 +1,7 @@
 {
     "parameters": {
         "null_value": "\\N",
-        "data_type": "structured"
+        "data_type": "structured",
+        "reader_mode": "FAILFAST"
     }
 }

@@ -5,7 +5,6 @@ from m3d.hadoop.emr.emr_system import EMRSystem
 
 
 class AlgorithmFixedLengthStringExtractor(AlgorithmHadoop):
-
     def __init__(self, execution_system, algorithm_instance, algorithm_params):
         """
         Initialize Algorithm Clickstream Preprocessor
@@ -15,16 +14,14 @@ class AlgorithmFixedLengthStringExtractor(AlgorithmHadoop):
         :param algorithm_params: algorithm configuration
         """
 
-        super(AlgorithmFixedLengthStringExtractor, self).__init__(
-            execution_system,
-            algorithm_instance,
-            algorithm_params
-        )
+        super(AlgorithmFixedLengthStringExtractor,
+              self).__init__(execution_system, algorithm_instance, algorithm_params)
 
         self.validate_parameters()
 
         self.source_table = self._execution_system.db_lake + "." + self._parameters["source_table"]
         self.target_table = self._execution_system.db_lake + "." + self._parameters["target_table"]
+        self.metadata_update_strategy = self._parameters.get("metadata_update_strategy", None)
 
         execution_system.add_cluster_tags({
             EMRSystem.EMRClusterTag.SOURCE_TABLE: self.source_table,
@@ -42,8 +39,11 @@ class AlgorithmFixedLengthStringExtractor(AlgorithmHadoop):
             "substring_positions": self._parameters["substring_positions"]
         }
 
-        if "partition_columns" in self._parameters:
-            params["partition_columns"] = self._parameters["partition_columns"]
+        if self.metadata_update_strategy is not None:
+            params.update({"metadata_update_strategy": self.metadata_update_strategy})
+
+        if "target_partitions" in self._parameters:
+            params["target_partitions"] = self._parameters["target_partitions"]
 
         if "select_conditions" in self._parameters:
             params["select_conditions"] = self._parameters["select_conditions"]
@@ -55,22 +55,31 @@ class AlgorithmFixedLengthStringExtractor(AlgorithmHadoop):
 
     def validate_parameters(self):
         if "source_table" not in self._parameters:
-            raise M3DIllegalArgumentException("Source table name is missing in the acon-file")
+            raise M3DIllegalArgumentException(
+                "Source table name is missing in the acon-file")
 
         if "target_table" not in self._parameters:
-            raise M3DIllegalArgumentException("Target table name is missing in the acon-file")
+            raise M3DIllegalArgumentException(
+                "Target table name is missing in the acon-file")
 
         if "source_field" not in self._parameters:
-            raise M3DIllegalArgumentException("Source field name is missing in the acon-file")
+            raise M3DIllegalArgumentException(
+                "Source field name is missing in the acon-file")
 
         if "substring_positions" not in self._parameters:
-            raise M3DIllegalArgumentException("Substring positions specification is missing in the acon-file")
+            raise M3DIllegalArgumentException(
+                "Substring positions specification is missing in the acon-file"
+            )
 
-        if "select_conditions" in self._parameters and "partition_columns" not in self._parameters:
-            raise M3DIllegalArgumentException("Unable to use select_conditions for unpartitioned table")
+        if "select_conditions" in self._parameters and "target_partitions" not in self._parameters:
+            raise M3DIllegalArgumentException(
+                "Unable to use select_conditions for unpartitioned table")
 
-        if "select_rules" in self._parameters and "partition_columns" not in self._parameters:
-            raise M3DIllegalArgumentException("Unable to use select_rules for unpartitioned table")
+        if "select_rules" in self._parameters and "target_partitions" not in self._parameters:
+            raise M3DIllegalArgumentException(
+                "Unable to use select_rules for unpartitioned table")
 
         if "select_conditions" in self._parameters and "select_rules" in self._parameters:
-            raise M3DIllegalArgumentException("Unable to use both select_conditions and select_rules at the same time")
+            raise M3DIllegalArgumentException(
+                "Unable to use both select_conditions and select_rules at the same time"
+            )

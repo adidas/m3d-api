@@ -10,7 +10,7 @@ from moto.emr.models import FakeStep
 from m3d import M3D
 from m3d.exceptions.m3d_exceptions import M3DIllegalArgumentException
 from m3d.hadoop.core.hive_table import HiveTable
-from m3d.hadoop.dataset.data_set_factory import DataSetFactory
+from m3d.hadoop.dataset.dataset_factory import DataSetFactory
 from m3d.hadoop.emr.emr_system import EMRSystem
 from m3d.util.data_types import DataType
 from test.core.acon_helper import AconHelper
@@ -26,7 +26,7 @@ class TestLoadTableAppendS3(S3TableTestBase):
     @patch("m3d.hadoop.core.spark_executor.SparkExecutor._remove_parameter_json")
     def test_load_table_append(self, remove_json_patch, add_tags_patch, _0, _1):
 
-        partition_columns = ["year", "month", "day"]
+        target_partitions = ["year", "month", "day"]
         regex_filename = ["[0-9]{4}", "(?<=[0-9]{4})([0-9]{2})(?=[0-9]{2})", "(?<=[0-9]{6})([0-9]{2})"]
         spark_external_parameters = '''
                 {
@@ -40,6 +40,8 @@ class TestLoadTableAppendS3(S3TableTestBase):
         compute_table_statistics = True
         verify_schema = False
         data_type = DataType.STRUCTURED
+        reader_mode = "DROPMALFORMED"
+        metadata_update_strategy = "SparkRecoverPartitionsCustom"
 
         source_system = AppendLoadConfig.destination_table.split("_", 1)[0]
         table = AppendLoadConfig.destination_table.split("_", 1)[-1]
@@ -53,13 +55,15 @@ class TestLoadTableAppendS3(S3TableTestBase):
         config = AppendLoadConfig(
             self.local_run_dir,
             self.env_setup,
-            partition_columns,
+            target_partitions,
             regex_filename,
             null_value=null_value,
             quote_character=quote_character,
+            metadata_update_strategy=metadata_update_strategy,
             compute_table_statistics=compute_table_statistics,
             verify_schema=verify_schema,
-            data_type=data_type
+            data_type=data_type,
+            reader_mode=reader_mode
         )
         fake_cluster = self.mock_emr.backends[self.default_aws_region].clusters[self.emr_cluster_id]
         config.load_table(self.emr_cluster_id, spark_external_parameters)
@@ -79,7 +83,7 @@ class TestLoadTableAppendS3(S3TableTestBase):
         assert spark_step.args[-1] == "s3"
 
         # Check that config_file_s3 file is on application S3 bucket
-        app_files = self.get_child_objects(config.data_set.dir_apps_append_load)
+        app_files = self.get_child_objects(config.dataset.dir_apps_append_load)
         app_json_files = list(filter(lambda app_file: os.path.basename(app_file).endswith(".json"), app_files))
         assert len(app_json_files) == 1
         assert app_json_files[0] == config.config_filepath
@@ -89,11 +93,11 @@ class TestLoadTableAppendS3(S3TableTestBase):
         expected_table_full_name = "{}.{}".format(config.db_name_lake, config.destination_table)
         expected_parameters = {
             "target_table": expected_table_full_name,
-            "source_dir": config.data_set.dir_landing_final,
-            "header_dir": config.data_set.dir_landing_header,
+            "source_dir": config.dataset.dir_landing_final,
+            "header_dir": config.dataset.dir_landing_header,
             "delimiter": "|",
             "has_header": False,
-            "partition_columns": partition_columns,
+            "target_partitions": target_partitions,
             "regex_filename": regex_filename,
             "file_format": "dsv",
             "null_value": "test_null_value",
@@ -101,7 +105,9 @@ class TestLoadTableAppendS3(S3TableTestBase):
             "compute_table_statistics": True,
             "data_type": DataType.STRUCTURED,
             "verify_schema": False,
-            "target_dir": test_target_dir
+            "metadata_update_strategy": "SparkRecoverPartitionsCustom",
+            "target_dir": test_target_dir,
+            "reader_mode": "DROPMALFORMED"
         }
         assert actual_parameters == expected_parameters
 
@@ -122,8 +128,7 @@ class TestLoadTableAppendS3(S3TableTestBase):
     @patch("m3d.hadoop.emr.emr_cluster_client.EMRClusterClient._do_add_emr_cluster_tags")
     @patch("m3d.hadoop.core.spark_executor.SparkExecutor._remove_parameter_json")
     def test_load_table_append_parquet(self, remove_json_patch, _0, _1, _2):
-
-        partition_columns = ["year", "month", "day"]
+        target_partitions = ["year", "month", "day"]
         regex_filename = ["[0-9]{4}", "(?<=[0-9]{4})([0-9]{2})(?=[0-9]{2})", "(?<=[0-9]{6})([0-9]{2})"]
         spark_external_parameters = '''
                 {
@@ -141,7 +146,14 @@ class TestLoadTableAppendS3(S3TableTestBase):
             table=table
         )
 
-        config = AppendLoadConfig(self.local_run_dir, self.env_setup, partition_columns, regex_filename, "parquet")
+        config = AppendLoadConfig(
+            self.local_run_dir,
+            self.env_setup,
+            target_partitions,
+            regex_filename,
+            file_format="parquet",
+            metadata_update_strategy="SparkRecoverPartitionsNative"
+        )
         fake_cluster = self.mock_emr.backends[self.default_aws_region].clusters[self.emr_cluster_id]
         config.load_table(self.emr_cluster_id, spark_external_parameters)
 
@@ -160,7 +172,7 @@ class TestLoadTableAppendS3(S3TableTestBase):
         assert spark_step.args[-1] == "s3"
 
         # Check that config_file_s3 file is on application S3 bucket
-        app_files = self.get_child_objects(config.data_set.dir_apps_append_load)
+        app_files = self.get_child_objects(config.dataset.dir_apps_append_load)
         app_json_files = list(filter(lambda app_file: os.path.basename(app_file).endswith(".json"), app_files))
         assert len(app_json_files) == 1
         assert app_json_files[0] == config.config_filepath
@@ -170,12 +182,13 @@ class TestLoadTableAppendS3(S3TableTestBase):
         expected_table_full_name = "{}.{}".format(config.db_name_lake, config.destination_table)
         expected_parameters = {
             "target_table": expected_table_full_name,
-            "source_dir": config.data_set.dir_landing_final,
-            "header_dir": config.data_set.dir_landing_header,
+            "source_dir": config.dataset.dir_landing_final,
+            "header_dir": config.dataset.dir_landing_header,
             "delimiter": "|",
             "has_header": False,
-            "partition_columns": partition_columns,
+            "target_partitions": target_partitions,
             "regex_filename": regex_filename,
+            "metadata_update_strategy": "SparkRecoverPartitionsNative",
             "file_format": "parquet",
             "target_dir": test_target_dir
         }
@@ -189,7 +202,7 @@ class TestLoadTableAppendS3(S3TableTestBase):
     @patch("moto.emr.models.ElasticMapReduceBackend.describe_step", return_value=FakeStep("COMPLETED"))
     def test_load_table_append_external_spark_parameters(self, _0, _1):
 
-        partition_columns = ["year", "month", "day"]
+        target_partitions = ["year", "month", "day"]
         regex_filename = ["[0-9]{4}", "(?<=[0-9]{4})([0-9]{2})(?=[0-9]{2})", "(?<=[0-9]{6})([0-9]{2})"]
 
         spark_external_parameters = {
@@ -198,7 +211,7 @@ class TestLoadTableAppendS3(S3TableTestBase):
             "spark.executor.memory": "90G"
         }
 
-        config = AppendLoadConfig(self.local_run_dir, self.env_setup, partition_columns, regex_filename)
+        config = AppendLoadConfig(self.local_run_dir, self.env_setup, target_partitions, regex_filename)
         fake_cluster = self.mock_emr.backends[self.default_aws_region].clusters[self.emr_cluster_id]
         config.load_table(self.emr_cluster_id, json.dumps(spark_external_parameters))
 
@@ -245,7 +258,7 @@ class TestLoadTableAppendS3(S3TableTestBase):
         with pytest.raises(M3DIllegalArgumentException) as ex:
             config.load_table(self.emr_cluster_id, spark_external_parameters)
 
-        assert str(ex.value).startswith("Lengths of partition_columns and regex_filename do not match")
+        assert str(ex.value).startswith("Lengths of target_partitions and regex_filename do not match")
 
     @pytest.mark.emr
     @patch("m3d.util.util.Util.send_email")
@@ -264,7 +277,7 @@ class TestLoadTableAppendS3(S3TableTestBase):
         with pytest.raises(M3DIllegalArgumentException) as ex:
             config.load_table(self.emr_cluster_id, spark_external_parameters)
 
-        assert str(ex.value).startswith("Lengths of partition_columns and regex_filename do not match")
+        assert str(ex.value).startswith("Lengths of target_partitions and regex_filename do not match")
 
     @pytest.mark.emr
     @patch("m3d.util.util.Util.send_email")
@@ -274,7 +287,7 @@ class TestLoadTableAppendS3(S3TableTestBase):
     def test_load_table_append_valid_parameters_semistructured_data(self, _0, _1, _2, _3):
 
         table = AppendLoadConfig.destination_table.split("_", 1)[-1]
-        partition_columns = ["year", "month", "day"]
+        target_partitions = ["year", "month", "day"]
         regex_filename = ["[0-9]{4}", "(?<=[0-9]{4})([0-9]{2})(?=[0-9]{2})", "(?<=[0-9]{6})([0-9]{2})"]
         test_target_dir = "s3://{lake_bucket}/{destination_environment}/{system}/{table}/data/".format(
             lake_bucket=self.default_dev_lake_bucket,
@@ -315,7 +328,7 @@ class TestLoadTableAppendS3(S3TableTestBase):
         config = AppendLoadConfig(
             self.local_run_dir,
             self.env_setup,
-            partition_columns,
+            target_partitions,
             regex_filename,
             null_value=null_value,
             quote_character=quote_character,
@@ -349,7 +362,7 @@ class TestLoadTableAppendS3(S3TableTestBase):
         assert spark_step.args[-1] == "s3"
 
         # Check that config_file_s3 file is on application S3 bucket
-        app_files = self.get_child_objects(config.data_set.dir_apps_append_load)
+        app_files = self.get_child_objects(config.dataset.dir_apps_append_load)
         app_json_files = list(filter(lambda app_file: os.path.basename(app_file).endswith(".json"), app_files))
         assert len(app_json_files) == 1
         assert app_json_files[0] == config.config_filepath
@@ -358,9 +371,9 @@ class TestLoadTableAppendS3(S3TableTestBase):
         actual_parameters = json.loads(self.get_object_content_from_s3(config.config_filepath))
         expected_parameters = {
             "target_table": "test101",
-            "source_dir": config.data_set.dir_landing_final,
-            "header_dir": config.data_set.dir_landing_header,
-            "partition_columns": partition_columns,
+            "source_dir": config.dataset.dir_landing_final,
+            "header_dir": config.dataset.dir_landing_header,
+            "target_partitions": target_partitions,
             "regex_filename": regex_filename,
             "file_format": "dsv",
             "null_value": "test_null_value",
@@ -381,14 +394,13 @@ class AppendLoadConfig:
     source_system = "bi"
     destination_table = "bi_test101"
 
-    cluster_mode = False
     load_type = "AppendLoad"
 
     def __init__(
             self,
             test_run_dir,
             setup_function,
-            partition_columns,
+            target_partitions,
             regex_filename,
             file_format=None,
             null_value=None,
@@ -396,7 +408,9 @@ class AppendLoadConfig:
             compute_table_statistics=None,
             schema=None,
             verify_schema=None,
-            data_type=None
+            data_type=None,
+            reader_mode=None,
+            metadata_update_strategy=None
     ):
 
         destination_params = [
@@ -410,7 +424,7 @@ class AppendLoadConfig:
         )
 
         self._write_acon(
-            partition_columns,
+            target_partitions,
             regex_filename,
             file_format=file_format,
             null_value=null_value,
@@ -418,14 +432,15 @@ class AppendLoadConfig:
             compute_table_statistics=compute_table_statistics,
             schema=schema,
             verify_schema=verify_schema,
-            data_type=data_type
+            data_type=data_type,
+            reader_mode=reader_mode,
+            metadata_update_strategy=metadata_update_strategy
         )
         self._write_tconx()
 
-        self.table_config = [self.config_file, self.cluster_mode] + destination_params
+        self.table_config = [self.config_file] + destination_params
         emr_system = EMRSystem(
             self.config_file,
-            self.cluster_mode,
             self.destination_system,
             self.destination_database,
             self.destination_environment
@@ -435,15 +450,15 @@ class AppendLoadConfig:
         if data_type is None:
             data_type = DataType.STRUCTURED
 
-        self.data_set = DataSetFactory.create_data_set(
+        self.dataset = DataSetFactory.create_dataset(
             emr_system,
             HiveTable.TableLoadType.APPEND,
             data_type,
             self.destination_table
         )
 
-        config_filename = "append_load-{}-{}.json".format(self.destination_environment, self.data_set.table_lake)
-        self.config_filepath = os.path.join(self.data_set.dir_apps_append_load, config_filename)
+        config_filename = "append_load-{}-{}.json".format(self.destination_environment, self.dataset.table_lake)
+        self.config_filepath = os.path.join(self.dataset.dir_apps_append_load, config_filename)
         self.db_name_lake = self.scon_emr_dict["environments"][self.destination_environment]["schemas"]["lake"]
 
         self.expected_algorithms_jar_path = "s3://" + os.path.join(
@@ -457,7 +472,7 @@ class AppendLoadConfig:
 
     def _write_acon(
             self,
-            partition_columns,
+            target_partitions,
             regex_filename,
             file_format=None,
             null_value=None,
@@ -465,14 +480,17 @@ class AppendLoadConfig:
             compute_table_statistics=None,
             schema=None,
             verify_schema=None,
-            data_type=None
+            data_type=None,
+            reader_mode=None,
+            metadata_update_strategy=None
     ):
         logging.info("Creating acon file.")
         acon_dict = {
             "parameters": {
                 "db_table_lake": self.destination_table,
-                "partition_columns": partition_columns,
-                "regex_filename": regex_filename
+                "target_partitions": target_partitions,
+                "regex_filename": regex_filename,
+                "metadata_update_strategy": metadata_update_strategy
             }
         }
         if file_format is not None:
@@ -489,6 +507,8 @@ class AppendLoadConfig:
             acon_dict["parameters"]["verify_schema"] = verify_schema
         if data_type is not None:
             acon_dict["parameters"]["data_type"] = data_type
+        if reader_mode is not None:
+            acon_dict["parameters"]["reader_mode"] = reader_mode
 
         AconHelper.setup_acon_from_dict(
             self.config_dict["tags"]["config"],

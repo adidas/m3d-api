@@ -14,7 +14,7 @@ class MockConfigService(object):
     scon_path = None
 
     @staticmethod
-    def get_scon_path(_, source_system, database):
+    def get_scon_path(source_system, database):
         assert source_system == 'test_source_system'
         assert database == 'test_database'
         return MockConfigService.scon_path
@@ -149,7 +149,6 @@ class TestEMRSystem(S3TableTestBase):
 
     test_emr_system_arguments = [
         'test_m3d_config_file',
-        'test_cluster_mode',
         'test_source_system',
         'test_database',
         'test_environment'
@@ -256,7 +255,6 @@ class TestEMRSystem(S3TableTestBase):
 
     @pytest.mark.emr
     def test_add_emr_cluster_tags(self):
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -273,7 +271,6 @@ class TestEMRSystem(S3TableTestBase):
 
         emr_system = EMRSystem(
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -286,7 +283,6 @@ class TestEMRSystem(S3TableTestBase):
 
     @pytest.mark.emr
     def test_add_emr_cluster_tags_multiple_calls(self):
-        cluster_mode = False
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -302,7 +298,6 @@ class TestEMRSystem(S3TableTestBase):
         fake_cluster = self.mock_emr.backends[self.default_aws_region].clusters[self.emr_cluster_id]
         emr_system = EMRSystem(
             m3d_config_file,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,

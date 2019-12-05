@@ -12,7 +12,7 @@ class MockConfigService:
     subdir_projects_m3d_engine = 'test_subdir_projects_m3d_engine'
 
     @staticmethod
-    def get_scon_path(_, source_system, database):
+    def get_scon_path(source_system, database):
         assert source_system == 'test_source_system'
         assert database == 'test_database'
         return 'test_data_file_path'
@@ -20,7 +20,6 @@ class MockConfigService:
 
 class TestMetadataSystem(UnitTestBase):
     test_metadatasystem_arguments = ['test_m3d_config_file',
-                                     'test_cluster_mode',
                                      'test_source_system',
                                      'test_database',
                                      'test_schema']
@@ -41,6 +40,5 @@ class TestMetadataSystem(UnitTestBase):
     def test_init_calls_the_superclass_constructor(self, __, mock_super_init):
         metadata_system = MetadataSystem(*self.test_metadatasystem_arguments)
         mock_super_init.assert_called_once_with(metadata_system, 'test_m3d_config_file',
-                                                'test_cluster_mode',
                                                 'test_source_system',
                                                 'test_database')

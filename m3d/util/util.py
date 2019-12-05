@@ -112,7 +112,7 @@ class Util(object):
         Util.execute_shell(email)
 
     @staticmethod
-    def get_partition_columns_list(partitioned_by):
+    def get_target_partitions_list(partitioned_by):
         """
         Return list of partition columns based on partitioned_by
 
@@ -129,7 +129,7 @@ class Util(object):
             raise Exception("Partition type " + partitioned_by + " not supported")
 
     @staticmethod
-    def get_partition_columns_string(partitioned_by):
+    def get_target_partitions_string(partitioned_by):
         """
         Return String of comma separated partition column names (for insert statement)
 
@@ -137,11 +137,11 @@ class Util(object):
         :return: String of comma separated partition column names
         """
 
-        cols = Util.get_partition_columns_list(partitioned_by)
+        cols = Util.get_target_partitions_list(partitioned_by)
         return functools.reduce(lambda x, y: x + "," + y, cols) if cols else ""
 
     @staticmethod
-    def get_defined_partition_columns_hive(partitioned_by):
+    def get_defined_target_partitions_hive(partitioned_by):
         """
         Return partition columns as comma separated String with Hive data types
 
@@ -149,11 +149,11 @@ class Util(object):
         :return: partition columns as comma separated String with Hive data types
         """
 
-        cols = Util.get_partition_columns_list(partitioned_by)
+        cols = Util.get_target_partitions_list(partitioned_by)
         return functools.reduce(lambda x, y: x + "," + y, map(lambda x: x + " smallint", cols)) if cols else ""
 
     @staticmethod
-    def get_typed_partition_columns_hive(partitioned_by):
+    def get_typed_target_partitions_hive(partitioned_by):
         """
         Return a list of partition columns tuples in form (name, type)
 
@@ -161,7 +161,7 @@ class Util(object):
         :return: list of partition columns tuples in form (name, type)
         """
 
-        cols = Util.get_partition_columns_list(partitioned_by)
+        cols = Util.get_target_partitions_list(partitioned_by)
         return list(map(lambda x: (x, "smallint"), cols))
 
     @staticmethod

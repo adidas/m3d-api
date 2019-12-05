@@ -1,0 +1,30 @@
+{
+  "environment": {},
+  "algorithm": {
+    "python_class": "AlgorithmNestedFlattener",
+    "parameters": {
+      "source_location": "nest/nest_test/data",
+      "target_table": "nest_flattened",
+      "chars_to_replace": "[.:#]+",
+      "replacement_char": "_",
+      "fields_to_flatten": [
+        "user_attributes",
+        "device_info",
+        "events",
+        "events__data",
+        "events__data__device_current_state"
+      ],
+      "column_mapping": {
+        "batch_id": "batch_id",
+        "environment": "environment",
+        "timestamp_unixtime_ms": "event_timestamp",
+        "message_type": "message_type",
+        "device_info__brand": "device_brand",
+        "device_info__network_country": "network_country",
+        "events__event_type": "event_type",
+        "events__data__screen_name": "screen_name",
+        "events__data__device_current_state__total_system_memory_usage_bytes": "memory_usage_bytes"
+      }
+    }
+  }
+}

@@ -11,7 +11,6 @@ class DataSet(DataSystem):
         # call super constructor
         super(DataSet, self).__init__(
             emr_system.config,
-            emr_system.cluster_mode,
             emr_system.source_system,
             emr_system.database,
             emr_system.environment

@@ -10,7 +10,6 @@ from test.core.s3_table_test_base import S3TableTestBase
 
 
 class TestAlgorithmGzipDecompressorEMR(S3TableTestBase):
-    cluster_mode = False
     destination_system = "bdp"
     destination_database = "emr_test"
     destination_environment = "dev"
@@ -43,17 +42,16 @@ class TestAlgorithmGzipDecompressorEMR(S3TableTestBase):
 
         algorithm_args = [
             m3d_config_file,
-            self.cluster_mode,
             self.destination_system,
             self.destination_database,
             self.destination_environment,
-            self.algorithm_instance
+            self.algorithm_instance,
         ]
 
         algorithm_kwargs = {
+            "emr_cluster_id": self.emr_cluster_id,
             "ext_params": json.dumps({
                 "environment": {
-                    "emr_cluster_id": self.emr_cluster_id,
                     "spark": {
                         "spark.driver.memory": "5G",
                         "spark.executor.memory": "20G",

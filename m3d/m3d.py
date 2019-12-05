@@ -8,7 +8,6 @@ class M3D(object):
     @staticmethod
     def create_emr_cluster(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -21,7 +20,6 @@ class M3D(object):
         from m3d.hadoop.emr import emr_system
         emr = emr_system.EMRSystem(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment
@@ -44,7 +42,6 @@ class M3D(object):
     @staticmethod
     def add_emr_cluster_tags(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -54,7 +51,6 @@ class M3D(object):
         from m3d.hadoop.emr.emr_system import EMRSystem
         emr_system = EMRSystem(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -65,7 +61,6 @@ class M3D(object):
     @staticmethod
     def delete_emr_cluster(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -73,7 +68,7 @@ class M3D(object):
     ):
         from m3d.hadoop.emr.emr_system import EMRSystem
         emr = EMRSystem(
-            config, cluster_mode,
+            config,
             destination_system,
             destination_database,
             destination_environment
@@ -85,7 +80,6 @@ class M3D(object):
     @staticmethod
     def create_table(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -95,7 +89,6 @@ class M3D(object):
         # create abstract table object to retrieve source technology
         abstract_table = Table(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -109,7 +102,6 @@ class M3D(object):
                 from m3d.hadoop.emr.emr_system import EMRSystem
                 emr_system = EMRSystem(
                     config,
-                    cluster_mode,
                     destination_system,
                     destination_database,
                     destination_environment,
@@ -125,7 +117,6 @@ class M3D(object):
     @staticmethod
     def drop_table(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -135,7 +126,6 @@ class M3D(object):
         # create abstract table object to retrieve source technology
         abstract_table = Table(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -149,7 +139,6 @@ class M3D(object):
                 from m3d.hadoop.emr.emr_system import EMRSystem
                 emr_system = EMRSystem(
                     config,
-                    cluster_mode,
                     destination_system,
                     destination_database,
                     destination_environment,
@@ -166,7 +155,6 @@ class M3D(object):
     @staticmethod
     def load_table(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -175,7 +163,7 @@ class M3D(object):
             emr_cluster_id=None,
             spark_params=None
     ):
-        ds = DataSystem(config, cluster_mode, destination_system, destination_database, destination_environment)
+        ds = DataSystem(config, destination_system, destination_database, destination_environment)
 
         # hadoop
         if ds.database_type == DataSystem.DatabaseType.EMR:
@@ -183,7 +171,6 @@ class M3D(object):
                 from m3d.hadoop.load.load_executor_hadoop import LoadExecutorHadoop
                 LoadExecutorHadoop.create(
                     config_path=config,
-                    cluster_mode=cluster_mode,
                     destination_system=destination_system,
                     destination_database=destination_database,
                     destination_environment=destination_environment,
@@ -200,7 +187,6 @@ class M3D(object):
     @staticmethod
     def truncate_table(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -210,7 +196,6 @@ class M3D(object):
         # create abstract table object to retrieve source technology
         abstract_table = Table(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -223,7 +208,6 @@ class M3D(object):
                 from m3d.hadoop.emr.emr_system import EMRSystem
                 emr_system = EMRSystem(
                     config,
-                    cluster_mode,
                     destination_system,
                     destination_database,
                     destination_environment,
@@ -240,7 +224,6 @@ class M3D(object):
     @staticmethod
     def create_lake_out_view(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -250,7 +233,6 @@ class M3D(object):
         # create abstract table object to retrieve source technology
         abstract_table = Table(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -264,7 +246,6 @@ class M3D(object):
                 from m3d.hadoop.emr.emr_system import EMRSystem
                 emr_system = EMRSystem(
                     config,
-                    cluster_mode,
                     destination_system,
                     destination_database,
                     destination_environment,
@@ -280,7 +261,6 @@ class M3D(object):
     @staticmethod
     def drop_lake_out_view(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -290,7 +270,6 @@ class M3D(object):
         # create abstract table object to retrieve source technology
         abstract_table = Table(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
@@ -304,7 +283,6 @@ class M3D(object):
                 from m3d.hadoop.emr.emr_system import EMRSystem
                 emr_system = EMRSystem(
                     config,
-                    cluster_mode,
                     destination_system,
                     destination_database,
                     destination_environment,
@@ -321,25 +299,45 @@ class M3D(object):
     @staticmethod
     def run_algorithm(
             config,
-            cluster_mode,
             destination_system,
             destination_database,
             destination_environment,
             algorithm_instance,
+            emr_cluster_id=None,
             ext_params=None
     ):
-        ds = DataSystem(config, cluster_mode, destination_system, destination_database, None)
+        ds = DataSystem(config, destination_system, destination_database, None)
         if ds.database_type == DataSystem.DatabaseType.EMR:
             from m3d.hadoop.algorithm.algorithm_executor_hadoop import AlgorithmExecutorHadoop
             AlgorithmExecutorHadoop.create(
                 config_path=config,
-                cluster_mode=cluster_mode,
                 destination_system=destination_system,
                 destination_database=destination_database,
                 destination_environment=destination_environment,
                 algorithm_instance=algorithm_instance,
+                emr_cluster_id=emr_cluster_id,
                 ext_params_str=ext_params
             ).run()
 
         else:
             raise m3d_exceptions.M3DUnsupportedDatabaseTypeException(ds.database_type)
+
+    @staticmethod
+    def drop_dataset(
+            config,
+            destination_system,
+            destination_database,
+            destination_environment,
+            destination_dataset,
+            emr_cluster_id=None
+    ):
+        from m3d.hadoop.emr.emr_system import EMRSystem
+        emr_system = EMRSystem(
+            config,
+            destination_system,
+            destination_database,
+            destination_environment,
+            emr_cluster_id)
+
+        emr_system.add_cluster_tag(EMRSystem.EMRClusterTag.API_METHOD, M3D.drop_dataset.__name__)
+        emr_system.drop_dataset(destination_dataset)
