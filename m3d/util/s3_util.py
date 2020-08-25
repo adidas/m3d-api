@@ -4,7 +4,6 @@ import os
 from gzip import GzipFile
 from io import BytesIO
 from urllib.parse import urlparse
-
 import boto3
 import botocore
 
@@ -113,9 +112,29 @@ class S3Util(object):
         bucket = self.s3_resource.Bucket(bucket_name)
         return ["s3://" + bucket_name + "/" + key.key for key in bucket.objects.filter(Prefix=prefix)]
 
+    def list_keys(self, s3_prefix_path, delimiter='/'):
+        """
+        Lists keys in a S3 bucket which paths start with the specified s3_prefix_path
+        The listing is not recursive, as a limiter is specified
+        :param s3_prefix_path: S3 path which is used as a prefix for filtering objects
+        :param delimiter delimiter to avoid recursive listing
+        :return: a list of the keys in the particular bucket
+        """
+        bucket_name, prefix = S3Util.get_bucket_and_key(s3_prefix_path)
+        bucket = self.s3_resource.Bucket(bucket_name)
+        result = bucket.meta.client.list_objects(Bucket=bucket_name,
+                                                 Prefix=prefix,
+                                                 Delimiter=delimiter)
+        if result.get('CommonPrefixes') is not None:
+            return [o.get('Prefix') for o in result.get('CommonPrefixes')]
+
     def list_child_objects(self, s3_prefix_path):
         s3_prefix_path = os.path.join(s3_prefix_path, "")
         return self.list_objects(s3_prefix_path)
+
+    def list_child_keys(self, s3_prefix_path, delimiter='/'):
+        s3_prefix_path = os.path.join(s3_prefix_path, "")
+        return self.list_keys(s3_prefix_path, delimiter)
 
     def move_object(self, src_s3_path, destination_s3_path):
         """

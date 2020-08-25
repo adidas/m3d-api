@@ -60,7 +60,6 @@ class TestDropDatasetS3Integration(EMRSystemUnitTestBase):
 
         lake_dir = "{environment}/{source_system}/{dataset}".format(
             environment=destination_environment,
-            db_cd=db_lake,
             source_system=source_system,
             dataset=short_dataset_name
         )

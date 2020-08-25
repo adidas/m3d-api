@@ -3,6 +3,7 @@ import functools
 import json
 import os
 import time
+import logging
 from enum import Enum
 
 from m3d.exceptions.m3d_exceptions import M3DIllegalArgumentException
@@ -129,7 +130,7 @@ class Table(data_system.DataSystem):
         tconx_provided_file_name = "temptconx_{0}".format(str(int(time.time() * 1000.0)))
         remove_tconx_provided_file_name = False
 
-        print("PROVIDED TYPE: {0}".format(init_type))
+        logging.info("PROVIDED TYPE: {0}".format(init_type))
 
         if init_type == TconxTableInitType.FROM_PROVIDED_JSON or init_type == TconxTableInitType.FROM_JSON_FILE:
             if init_type == TconxTableInitType.FROM_PROVIDED_JSON:
@@ -210,7 +211,7 @@ class Table(data_system.DataSystem):
         if not self.table_lakeout or self.table_lakeout == "":
             self.db_view_lake_out = ""
         else:
-            print("db_lake_out: {0}, table_lakeout: {1}".format(self.db_lake_out, self.table_lakeout))
+            logging.info("db_lake_out: {0}, table_lakeout: {1}".format(self.db_lake_out, self.table_lakeout))
             self.db_view_lake_out = self.db_lake_out + "." + self.table_lakeout
 
     @staticmethod

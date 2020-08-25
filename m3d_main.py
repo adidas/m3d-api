@@ -70,6 +70,8 @@ if __name__ == "__main__":
                         dest="destination_environment", help="destination environment code")
     parser.add_argument('-destination_table', action="store",
                         dest="destination_table", help="destination table code")
+    parser.add_argument('-destination_table_location_prefix', action="store",
+                        dest="destination_table_location_prefix", help="destination table location prefix")
     parser.add_argument('-destination_dataset', action="store",
                         dest="destination_dataset", help="destination dataset code")
     parser.add_argument('-algorithm_instance', action="store",
@@ -96,7 +98,7 @@ if __name__ == "__main__":
         "create_table": {
             MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "destination_table"],
-            OPTIONAL_ARGS: ["emr_cluster_id"]
+            OPTIONAL_ARGS: ["emr_cluster_id", "destination_table_location_prefix"]
         },
         "drop_table": {
             MANDATORY_ARGS: ["config", "destination_system", "destination_database",
@@ -114,12 +116,12 @@ if __name__ == "__main__":
                              "destination_environment", "destination_table"],
             OPTIONAL_ARGS: ["emr_cluster_id"]
         },
-        "create_lake_out_view": {
+        "create_out_view": {
             MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "destination_table"],
             OPTIONAL_ARGS: ["emr_cluster_id"]
         },
-        "drop_lake_out_view": {
+        "drop_out_view": {
             MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "destination_table"],
             OPTIONAL_ARGS: ["emr_cluster_id"]
@@ -127,7 +129,7 @@ if __name__ == "__main__":
         "run_algorithm": {
             MANDATORY_ARGS: ["config", "destination_system", "destination_database",
                              "destination_environment", "algorithm_instance"],
-            OPTIONAL_ARGS: ["ext_params"]
+            OPTIONAL_ARGS: ["emr_cluster_id", "ext_params"]
         },
         "create_emr_cluster": {
             MANDATORY_ARGS: ["config", "destination_system", "destination_database",
@@ -173,7 +175,6 @@ if __name__ == "__main__":
     try:
         logging.info("Calling M3D.{}().".format(args.function))
         api_function(**fn_kwargs)
-        # logging.info("Successfully finished M3D.{}().".format(args.function))
 
     except Exception as e:
         logging.error("M3D.{}() call failed because of an error: {}".format(args.function, e))

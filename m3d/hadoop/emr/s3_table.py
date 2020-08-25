@@ -48,6 +48,7 @@ class S3Table(HiveTable):
         )
 
         self.dir_landing_table = os.path.join(self.dir_landing_source_system, self.table)
+        self.dir_landing_delta_table = os.path.join(self.dir_landing_table, self.emr_system.subdir_delta_table)
         self.dir_landing_data = os.path.join(self.dir_landing_table, self.emr_system.subdir_data)
         self.dir_landing_work = os.path.join(self.dir_landing_table, self.emr_system.subdir_work)
         self.dir_landing_archive = os.path.join(self.dir_landing_table, self.emr_system.subdir_archive)
@@ -61,7 +62,7 @@ class S3Table(HiveTable):
         )
 
         self.dir_lake_table = os.path.join(self.dir_lake_source_system, self.table)
-        self.dir_lake_final = os.path.join(self.dir_lake_table, self.emr_system.subdir_data)
+        self.dir_lake_final = self._get_lake_table_location()
         self.dir_lake_backup = os.path.join(self.dir_lake_table, self.emr_system.subdir_data_backup)
 
         # apps
@@ -69,15 +70,43 @@ class S3Table(HiveTable):
         self.dir_apps_table = os.path.join(self.dir_apps_system, self.table)
         self.dir_apps_full_load = os.path.join(self.dir_apps_table, self.emr_system.subdir_full_load)
         self.dir_apps_delta_load = os.path.join(self.dir_apps_table, self.emr_system.subdir_delta_load)
+        self.dir_apps_delta_lake_load = os.path.join(self.dir_apps_table, self.emr_system.subdir_delta_lake_load)
         self.dir_apps_append_load = os.path.join(self.dir_apps_table, self.emr_system.subdir_append_load)
 
-    def create_tables(self):
+    def _get_lake_table_location(self):
+        """
+        Infers the location of the table based on its contents on s3, depending if the same is an append or
+        delta load table (if branch) or a full load table (else branch).
+        :return: the table location
+        """
+        try:
+            child_keys = self.emr_system.s3_util.list_child_keys(self.dir_lake_table)
+            if child_keys:
+                keys_wo_folder_placeholders = [key.rstrip('/').split('/')[-1]
+                                               for key in child_keys if all(x not in key for x in ["$folder$", "tmp"])]
+                if not keys_wo_folder_placeholders or self.emr_system.subdir_data in keys_wo_folder_placeholders:
+                    table_location = os.path.join(self.dir_lake_table, self.emr_system.subdir_data)
+                else:
+                    keys_wo_folder_placeholders.sort()
+                    table_location = os.path.join(self.dir_lake_table, keys_wo_folder_placeholders[-1])
+            else:
+                table_location = os.path.join(self.dir_lake_table, self.emr_system.subdir_data)
+            logging.info("Table location: {}".format(table_location))
+            return table_location
+        except Exception:
+            logging.error("Failed to get table location for {}".format(self.db_table_lake))
+            raise
+
+    def create_tables(self, lake_table_location_prefix):
         hql = "\n".join([
             self._get_create_database_if_not_exists(self.db_landing),
             self._get_create_database_if_not_exists(self.db_lake),
             self._get_create_landing_statement(self.dir_landing_final).with_semicolon(),
             HQLGenerator.generate_repair_table(self.db_table_landing).with_semicolon(),
-            self._get_create_lake_statement(self.dir_lake_final).with_semicolon(),
+            self._get_create_lake_statement(
+                self.dir_lake_final if lake_table_location_prefix is None else os.path.join(self.dir_lake_table,
+                                                                                            lake_table_location_prefix)
+            ).with_semicolon(),
             HQLGenerator.generate_repair_table(self.db_table_lake).with_semicolon()
         ])
 
@@ -117,7 +146,7 @@ class S3Table(HiveTable):
 
         logging.info("S3 tables were successfully deleted")
 
-    def create_lake_out_view(self):
+    def create_out_view(self):
         """
         Create lake_out view with synchronized column names. Drop and recreate view if it exists in Hive.
         """
@@ -132,13 +161,13 @@ class S3Table(HiveTable):
                 message="View {} cannot be created. The view would have no columns.".format(self.db_view_lake_out)
             )
 
-        create_lake_out_view_ddl = "\n".join([
+        create_out_view_ddl = "\n".join([
             self._get_drop_lakeout_statement().with_semicolon(),
             self._get_create_lakeout_statement().with_semicolon()
         ])
 
         try:
-            self.emr_system.execute_hive(create_lake_out_view_ddl)
+            self.emr_system.execute_hive(create_out_view_ddl)
         except Exception:
             msg = "Failed to create {} view.".format(self.db_view_lake_out)
             logging.error(msg)
@@ -146,7 +175,7 @@ class S3Table(HiveTable):
 
         logging.info("Successfully created {} view.".format(self.db_view_lake_out))
 
-    def drop_lake_out_view(self):
+    def drop_out_view(self):
         """
         Drop  lake out view.
         """
@@ -155,10 +184,10 @@ class S3Table(HiveTable):
         if self.table_lakeout == "":
             raise M3DDatabaseException(message="lake_out view name does not exist")
 
-        drop_lake_out_view_ddl = self._get_drop_lakeout_statement().with_semicolon()
+        drop_out_view_ddl = self._get_drop_lakeout_statement().with_semicolon()
 
         try:
-            self.emr_system.execute_hive(drop_lake_out_view_ddl)
+            self.emr_system.execute_hive(drop_out_view_ddl)
         except Exception:
             msg = "Failed to drop {} view.".format(self.db_view_lake_out)
             logging.error(msg)
@@ -209,7 +238,7 @@ class S3Table(HiveTable):
         landing_dirs = [self.dir_landing_work, self.dir_landing_archive, self.dir_landing_final]
         landing_create_table_ddl = self._get_create_landing_statement(self.dir_landing_final).with_semicolon()
 
-        lake_dirs = [self.dir_lake_final]
+        lake_dirs = [self.dir_lake_table]
         lake_create_table_ddl = self._get_create_lake_statement(self.dir_lake_final).with_semicolon()
 
         truncation_specs = [

@@ -45,8 +45,8 @@ class TestDropOutViewS3Integration(S3TableTestBase):
 
         lake_out = "bi_test101"
 
-        logging.info("Calling  M3D.drop_lake_out_view()")
-        M3D.drop_lake_out_view(*table_config_args, **table_config_kwargs)
+        logging.info("Calling  M3D.drop_out_view()")
+        M3D.drop_out_view(*table_config_args, **table_config_kwargs)
 
         emr_backend = self.mock_emr.backends[self.default_aws_region]
         fake_cluster = emr_backend.clusters[self.emr_cluster_id]
@@ -67,7 +67,7 @@ class TestDropOutViewS3Integration(S3TableTestBase):
         assert len(add_tags_patch_call_args_list) == 2
         assert add_tags_patch_call_args_list[0][0][0] == [{
             "Key": "ApiMethod",
-            "Value": "drop_lake_out_view"
+            "Value": "drop_out_view"
         }]
         assert add_tags_patch_call_args_list[1][0][0] == [{
             "Key": "TargetView",

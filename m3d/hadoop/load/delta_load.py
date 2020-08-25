@@ -25,7 +25,7 @@ class DeltaLoad(LoadHadoop):
             self._dataset.db_table_lake,
             self._dataset.dir_lake_final,
             self._dataset.dir_landing_data,
-            ["m3d_timestamp", "datapakid", "partno", "record"],
+            ["actrequest_timestamp", "datapakid", "partno", "record"],
             self._dataset.business_key,
             util.Util.get_target_partitions_list(self._dataset.partitioned_by),
             self._dataset.partition_column,

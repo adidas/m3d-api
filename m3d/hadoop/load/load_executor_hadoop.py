@@ -10,6 +10,7 @@ from m3d.hadoop.dataset.dataset_factory import DataSetFactory
 from m3d.hadoop.emr.emr_system import EMRSystem
 from m3d.hadoop.load.append_load import AppendLoad
 from m3d.hadoop.load.delta_load import DeltaLoad
+from m3d.hadoop.load.delta_lake_load import DeltaLakeLoad
 from m3d.hadoop.load.full_load import FullLoad
 from m3d.hadoop.load.load_hadoop import LoadHadoop
 from m3d.system.data_system import DataSystem
@@ -92,6 +93,7 @@ class LoadExecutorHadoop(SparkExecutor):
         return {
             HiveTable.TableLoadType.FULL: FullLoad,
             HiveTable.TableLoadType.DELTA: DeltaLoad,
+            HiveTable.TableLoadType.DELTALAKE: DeltaLakeLoad,
             HiveTable.TableLoadType.APPEND: AppendLoad
         }
 

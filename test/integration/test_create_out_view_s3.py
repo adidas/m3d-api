@@ -49,7 +49,7 @@ class TestCreateOutViewS3(S3TableTestBase):
         }
 
         with pytest.raises(M3DDatabaseException) as exc_info:
-            M3D.create_lake_out_view(*table_config, **table_config_kwargs)
+            M3D.create_out_view(*table_config, **table_config_kwargs)
 
         assert "lake_out view name does not exist" == str(exc_info.value)
 
@@ -94,7 +94,7 @@ class TestCreateOutViewS3(S3TableTestBase):
         db_view_lake_out = db_lake_out + "." + table_lakeout
 
         with pytest.raises(M3DDatabaseException) as exc_info:
-            M3D.create_lake_out_view(*table_config, **table_config_kwargs)
+            M3D.create_out_view(*table_config, **table_config_kwargs)
 
         err_msg = "View {} cannot be created. The view would have no columns.".format(db_view_lake_out)
         assert err_msg == str(exc_info.value)
@@ -136,8 +136,8 @@ class TestCreateOutViewS3(S3TableTestBase):
         emr_steps_completer = self.create_emr_steps_completer(expected_steps_count=1, timeout_seconds=3)
 
         with ConcurrentExecutor(emr_steps_completer, delay_sec=0.4):
-            logging.info("Calling M3D.create_lake_out_view().")
-            M3D.create_lake_out_view(*table_config, **table_config_kwargs)
+            logging.info("Calling M3D.create_out_view().")
+            M3D.create_out_view(*table_config, **table_config_kwargs)
 
         emr_system = EMRSystem(*table_config[:5])
         s3_table = S3Table(emr_system, destination_table)
@@ -186,7 +186,7 @@ class TestCreateOutViewS3(S3TableTestBase):
         assert len(add_tags_patch_call_args_list) == 2
         assert add_tags_patch_call_args_list[0][0][0] == [{
             "Key": "ApiMethod",
-            "Value": "create_lake_out_view"
+            "Value": "create_out_view"
         }]
         assert add_tags_patch_call_args_list[1][0][0] == [{
             "Key": "TargetView",

@@ -12,7 +12,9 @@ class AWSS3CredentialsWrapper(object):
         "upload_object",
         "upload_child_objects",
         "list_objects",
+        "list_keys",
         "list_child_objects",
+        "list_child_keys",
         "object_exists",
         "wait_for_file_availability",
         "download_object"
@@ -30,12 +32,12 @@ class AWSS3CredentialsWrapper(object):
         "is_s3_path"
     ]
 
-    ERROR_METHOD_NOT_SUPPORTED = "The following method is not supported for AWSFactoryS3Wrapper: {attr}()"
+    ERROR_METHOD_NOT_SUPPORTED = "The following method is not supported for AWSS3CredentialsWrapper: {attr}()"
     ERROR_UNKNOWN_ATTRIBUTE = "{attr} is not an attribute of S3Util"
-    ERROR_CROSS_BUCKET_ACCESS = "AWSFactoryS3Wrapper.{attr}() has been called with arguments pointing to both" \
+    ERROR_CROSS_BUCKET_ACCESS = "AWSS3CredentialsWrapper.{attr}() has been called with arguments pointing to both" \
                                 " data and applications S3 buckets, this is not supported."
-    ERROR_UNMANAGED_BUCKET = "AWSFactoryS3Wrapper.{attr}() has been called with arguments pointing to S3 buckets " \
-                             "which are not managed by AWSFactoryS3Wrapper: {buckets}"
+    ERROR_UNMANAGED_BUCKET = "AWSS3CredentialsWrapper.{attr}() has been called with arguments pointing to S3 buckets " \
+                             "which are not managed by AWSS3CredentialsWrapper: {buckets}"
 
     def __init__(
             self,
@@ -54,17 +56,17 @@ class AWSS3CredentialsWrapper(object):
 
     def __getattr__(self, attr):
         """
-        This function will be called by Python automatically whenever we try to call a function on AWSFactoryS3Wrapper.
-        It provides mapping from a function name, attr, to a callable object that will be called with function
-        arguments.
+        This function will be called by Python automatically whenever we try to call a function on
+        AWSS3CredentialsWrapper. It provides mapping from a function name, attr, to a callable object that
+        will be called with function arguments.
 
         It will return a wrapper object which will decide which S3Util object to call based on function
         arguments. It will extract arguments that are S3 paths and will use this for choosing correct S3Util object
         to use.
 
         Please note that methods which mix paths from both S3 application and data buckets are not allowed. Function
-        will also raise if client passes arguments pointing to S3 buckets which are not managed by AWSFactoryS3Wrapper,
-        that is they are not in self.app_buckets or self.data_buckets.
+        will also raise if client passes arguments pointing to S3 buckets which are not managed by
+        AWSS3CredentialsWrapper, that is they are not in self.app_buckets or self.data_buckets.
 
         :param attr: name of the method that should be called
         :return: callable object which will redirect call to corresponding S3Util object
@@ -92,7 +94,7 @@ class AWSS3CredentialsWrapper(object):
                         raise AttributeError(AWSS3CredentialsWrapper.ERROR_METHOD_NOT_SUPPORTED.format(attr=attr))
 
                 # If we are here, then we are doing operation which has either both data and application S3 paths in
-                # arguments, or S3 path which point to a buckets which is not managed by AWSFactoryS3Wrapper. Both
+                # arguments, or S3 path which point to a buckets which is not managed by AWSS3CredentialsWrapper. Both
                 # cases are not supported.
                 self._raise_unsupported_bucket_operation_error(attr, s3_buckets)
 
@@ -123,7 +125,7 @@ class AWSS3CredentialsWrapper(object):
               and application S3 paths in arguments
 
             - attribute has been called with arguments that point to S3
-              buckets which are not managed by AWSFactoryS3Wrapper
+              buckets which are not managed by AWSS3CredentialsWrapper
 
         Both cases are not supported.
 
@@ -134,7 +136,7 @@ class AWSS3CredentialsWrapper(object):
             raise M3DIllegalArgumentException(AWSS3CredentialsWrapper.ERROR_CROSS_BUCKET_ACCESS.format(attr=attr))
 
         else:
-            # s3_buckets_set contains buckets which are not managed by AWSFactoryS3Wrapper.
+            # s3_buckets_set contains buckets which are not managed by AWSS3CredentialsWrapper.
             managed_s3_buckets = self.app_buckets + self.data_buckets
             unmanaged_s3_buckets = list(filter(
                 lambda bucket: bucket not in managed_s3_buckets,

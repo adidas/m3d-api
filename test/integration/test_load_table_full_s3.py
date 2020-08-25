@@ -109,7 +109,7 @@ class TestLoadTableFullS3(S3TableTestBase):
         assert spark_step.args[-5] == "com.adidas.analytics.AlgorithmFactory"
         assert spark_step.args[-4] == expected_algorithms_jar_path
         assert spark_step.args[-3] == "FullLoad"
-        assert spark_step.args[-2] == "s3://adidas-dev-application/m3d/dev/apps/loading/bdp/test101/" \
+        assert spark_step.args[-2] == "s3://m3d-dev-application/m3d/dev/apps/loading/bdp/test101/" \
                                       "full_load/full_load-dev-bi_test101.json"
         assert spark_step.args[-1] == "s3"
 
@@ -220,6 +220,6 @@ class TestLoadTableFullS3(S3TableTestBase):
         assert spark_step.args[-5] == "com.adidas.analytics.AlgorithmFactory"
         assert spark_step.args[-4] == expected_algorithms_jar_path
         assert spark_step.args[-3] == "FullLoad"
-        assert spark_step.args[-2] == "s3://adidas-dev-application/m3d/dev/apps/loading/bdp/test101/" \
+        assert spark_step.args[-2] == "s3://m3d-dev-application/m3d/dev/apps/loading/bdp/test101/" \
                                       "full_load/full_load-dev-bi_test101.json"
         assert spark_step.args[-1] == "s3"

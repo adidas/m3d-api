@@ -14,7 +14,9 @@
   "tags": {
     "full_load": "full_load",
     "delta_load": "delta_load",
+    "delta_lake_load": "delta_lake_load",
     "append_load": "append_load",
+    "decom_gzip": "gzip_decompressor",
     "table_suffix_stage": "_stg1",
     "table_suffix_swap": "_swap",
     "config": "config",
@@ -25,7 +27,6 @@
     "upload": "upload",
     "pushdown": "pushdown",
     "aws": "aws",
-    "hdfs": "hdfs",
     "file": "file"
   },
   "data_dict_delimiter": "|"

@@ -28,6 +28,7 @@ class SemistructuredDataSet(DataSet):
             self.source_system
         )
         self.dir_landing_table = os.path.join(self.dir_landing_source_system, self.dataset_subdir)
+        self.dir_landing_delta_table = os.path.join(self.dir_landing_table, self.emr_system.subdir_delta_table)
         self.dir_landing_data = os.path.join(self.dir_landing_table, self.emr_system.subdir_data)
         self.dir_landing_work = os.path.join(self.dir_landing_table, self.emr_system.subdir_work)
         self.dir_landing_archive = os.path.join(self.dir_landing_table, self.emr_system.subdir_archive)
@@ -49,6 +50,7 @@ class SemistructuredDataSet(DataSet):
         self.dir_apps_table = os.path.join(self.dir_apps_system, self.dataset_subdir)
         self.dir_apps_full_load = os.path.join(self.dir_apps_table, self.emr_system.subdir_full_load)
         self.dir_apps_delta_load = os.path.join(self.dir_apps_table, self.emr_system.subdir_delta_load)
+        self.dir_apps_delta_lake_load = os.path.join(self.dir_apps_table, self.emr_system.subdir_delta_lake_load)
         self.dir_apps_append_load = os.path.join(self.dir_apps_table, self.emr_system.subdir_append_load)
 
     def drop_datasets(self):

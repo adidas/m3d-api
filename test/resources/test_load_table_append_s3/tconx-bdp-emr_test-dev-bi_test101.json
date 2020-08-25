@@ -2,7 +2,7 @@
     "source": {
         "table": "TEST101_CL",
         "schema": "bi_del_out", 
-        "technology": "hana", 
+        "technology": "mysql",
         "system": "bi", 
         "database": "phb"
     }, 

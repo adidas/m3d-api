@@ -1,3 +1,5 @@
+import logging
+
 from m3d.exceptions import m3d_exceptions
 from m3d.system.data_system import DataSystem
 from m3d.system.table import Table
@@ -33,10 +35,7 @@ class M3D(object):
             ebs_size=ebs_size
         )
 
-        # don't change this print statement, it is parsed by jenkins pipeline
-        print(emr_cluster_id)
-        # do not print anything after the two print statements above. This is a hack to parse
-        # last two lines of this function by jenkins.
+        logging.info("EMR Cluster ID: {}".format(emr_cluster_id))
         return emr_cluster_id
 
     @staticmethod
@@ -84,6 +83,7 @@ class M3D(object):
             destination_database,
             destination_environment,
             destination_table,
+            destination_table_location_prefix=None,
             emr_cluster_id=None
     ):
         # create abstract table object to retrieve source technology
@@ -108,7 +108,7 @@ class M3D(object):
                     emr_cluster_id
                 )
                 emr_system.add_cluster_tag(EMRSystem.EMRClusterTag.API_METHOD, M3D.create_table.__name__)
-                emr_system.create_table(destination_table)
+                emr_system.create_table(destination_table, destination_table_location_prefix)
             else:
                 raise m3d_exceptions.M3DUnsupportedStorageException(abstract_table.storage_type)
         else:
@@ -222,7 +222,7 @@ class M3D(object):
 
     # create out_view (l2)
     @staticmethod
-    def create_lake_out_view(
+    def create_out_view(
             config,
             destination_system,
             destination_database,
@@ -251,15 +251,15 @@ class M3D(object):
                     destination_environment,
                     emr_cluster_id
                 )
-                emr_system.add_cluster_tag(EMRSystem.EMRClusterTag.API_METHOD, M3D.create_lake_out_view.__name__)
-                emr_system.create_lake_out_view(destination_table)
+                emr_system.add_cluster_tag(EMRSystem.EMRClusterTag.API_METHOD, M3D.create_out_view.__name__)
+                emr_system.create_out_view(destination_table)
             else:
                 raise m3d_exceptions.M3DUnsupportedStorageException(abstract_table.storage_type)
         else:
             raise m3d_exceptions.M3DUnsupportedDestinationSystemException(destination_system_technology)
 
     @staticmethod
-    def drop_lake_out_view(
+    def drop_out_view(
             config,
             destination_system,
             destination_database,
@@ -288,8 +288,8 @@ class M3D(object):
                     destination_environment,
                     emr_cluster_id
                 )
-                emr_system.add_cluster_tag(EMRSystem.EMRClusterTag.API_METHOD, M3D.drop_lake_out_view.__name__)
-                emr_system.drop_lake_out_view(destination_table)
+                emr_system.add_cluster_tag(EMRSystem.EMRClusterTag.API_METHOD, M3D.drop_out_view.__name__)
+                emr_system.drop_out_view(destination_table)
             else:
                 raise m3d_exceptions.M3DUnsupportedStorageException(abstract_table.storage_type)
         else:

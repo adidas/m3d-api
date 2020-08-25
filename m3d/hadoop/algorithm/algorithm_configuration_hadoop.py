@@ -30,8 +30,8 @@ class AlgorithmConfigurationHadoop(object):
         self._algorithm_instance = algorithm_instance
 
         environment_section = acon_dict[self.Sections.ENVIRONMENT]
-        # TODO: this should not be a class field because all the parameters should be contained in algorithm/parameters,
-        #  at the moment it is used for compatibility with Reconciliation and GzipDecompressor
+        # This should not be an instance variable because all the parameters should be contained in
+        # algorithm/parameters. Used for compatibility with GzipDecompressor
         self._algorithm_params = acon_dict[self.Sections.ALGORITHM]
 
         self._python_class = self._algorithm_params[self.Keys.PYTHON_CLASS]

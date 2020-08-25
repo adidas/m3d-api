@@ -2,7 +2,7 @@
     "source": {
         "table": "TEST101",
         "schema": "bi_m3d_out", 
-        "technology": "hana", 
+        "technology": "mysql",
         "system": "bi", 
         "database": "phb"
     }, 

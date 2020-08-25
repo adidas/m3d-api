@@ -3,8 +3,8 @@ from m3d.hadoop.algorithm.scala_classes import ScalaClasses
 from m3d.hadoop.emr.emr_system import EMRSystem
 
 
-class AlgorithmPartitionMaterialization(object):
-    class BasePartitionMaterialization(AlgorithmHadoop):
+class AlgorithmMaterialization(object):
+    class BaseMaterialization(AlgorithmHadoop):
         class ConfigKeys(object):
             VIEW = "view"
             SOURCE_TABLE = "source_table"
@@ -15,6 +15,8 @@ class AlgorithmPartitionMaterialization(object):
             DATE_TO = "date_to"
             NUMBER_OUTPUT_PARTITIONS = "number_output_partitions"
             METADATA_UPDATE_STRATEGY = "metadata_update_strategy"
+            BASE_DATA_DIR = "base_data_dir"
+            NUM_VERSIONS_TO_RETAIN = "num_versions_to_retain"
 
         def __init__(self, execution_system, algorithm_instance, algorithm_params):
             """
@@ -25,7 +27,7 @@ class AlgorithmPartitionMaterialization(object):
             :param algorithm_params: algorithm configuration
             """
 
-            super(AlgorithmPartitionMaterialization.BasePartitionMaterialization, self).__init__(
+            super(AlgorithmMaterialization.BaseMaterialization, self).__init__(
                 execution_system,
                 algorithm_instance,
                 algorithm_params
@@ -69,7 +71,7 @@ class AlgorithmPartitionMaterialization(object):
         def _get_additional_parameters(self):
             raise NotImplementedError()
 
-    class FullPartitionMaterialization(BasePartitionMaterialization):
+    class FullMaterialization(BaseMaterialization):
 
         def __init__(self, execution_system, algorithm_instance, algorithm_params):
             """
@@ -80,19 +82,24 @@ class AlgorithmPartitionMaterialization(object):
             :param algorithm_params: algorithm configuration
             """
 
-            super(AlgorithmPartitionMaterialization.FullPartitionMaterialization, self).__init__(
+            super(AlgorithmMaterialization.FullMaterialization, self).__init__(
                 execution_system,
                 algorithm_instance,
                 algorithm_params
             )
 
+            self.num_versions_to_retain = self._parameters.get(self.ConfigKeys.NUM_VERSIONS_TO_RETAIN, 2)
+
         def get_scala_class(self):
-            return ScalaClasses.PARTITION_FULL_MATERIALIZATION
+            return ScalaClasses.FULL_MATERIALIZATION
 
         def _get_additional_parameters(self):
-            return {}
+            return {
+                self.ConfigKeys.BASE_DATA_DIR: self._execution_system.subdir_data,
+                self.ConfigKeys.NUM_VERSIONS_TO_RETAIN: self.num_versions_to_retain
+            }
 
-    class RangePartitionMaterialization(BasePartitionMaterialization):
+    class RangeMaterialization(BaseMaterialization):
 
         def __init__(self, execution_system, algorithm_instance, algorithm_params):
             """
@@ -103,14 +110,14 @@ class AlgorithmPartitionMaterialization(object):
             :param algorithm_params: algorithm configuration
             """
 
-            super(AlgorithmPartitionMaterialization.RangePartitionMaterialization, self).__init__(
+            super(AlgorithmMaterialization.RangeMaterialization, self).__init__(
                 execution_system,
                 algorithm_instance,
                 algorithm_params
             )
 
         def get_scala_class(self):
-            return ScalaClasses.PARTITION_RANGE_MATERIALIZATION
+            return ScalaClasses.RANGE_MATERIALIZATION
 
         def _get_additional_parameters(self):
             date_from = self._parameters[self.ConfigKeys.DATE_FROM]
@@ -120,7 +127,7 @@ class AlgorithmPartitionMaterialization(object):
                 self.ConfigKeys.DATE_TO: date_to
             }
 
-    class QueryPartitionMaterialization(BasePartitionMaterialization):
+    class QueryMaterialization(BaseMaterialization):
 
         def __init__(self, execution_system, algorithm_instance, algorithm_params):
             """
@@ -131,14 +138,14 @@ class AlgorithmPartitionMaterialization(object):
             :param algorithm_params: algorithm configuration
             """
 
-            super(AlgorithmPartitionMaterialization.QueryPartitionMaterialization, self).__init__(
+            super(AlgorithmMaterialization.QueryMaterialization, self).__init__(
                 execution_system,
                 algorithm_instance,
                 algorithm_params
             )
 
         def get_scala_class(self):
-            return ScalaClasses.PARTITION_QUERY_MATERIALIZATION
+            return ScalaClasses.QUERY_MATERIALIZATION
 
         def _get_additional_parameters(self):
             select_conditions = self._parameters[self.ConfigKeys.SELECT_CONDITIONS]

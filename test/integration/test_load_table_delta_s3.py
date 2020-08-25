@@ -3,7 +3,6 @@ import os
 
 import py
 import pytest
-# import responses
 from mock import patch
 from moto.emr.models import FakeStep
 
@@ -64,8 +63,6 @@ class TestLoadTableDeltaS3(S3TableTestBase):
     @patch("m3d.hadoop.emr.emr_cluster_client.EMRClusterClient._do_add_emr_cluster_tags")
     @patch("m3d.hadoop.core.spark_executor.SparkExecutor._remove_parameter_json")
     def test_load_table_delta(self, remove_json_patch, add_tags_patch, _0, _1):
-        # responses.add_passthru(self.default_server_url)
-
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -148,7 +145,7 @@ class TestLoadTableDeltaS3(S3TableTestBase):
         assert load_table_parameters["active_records_table_lake"] == s3_table_active.db_table_lake
         assert load_table_parameters["active_records_dir_lake"] == s3_table_active.dir_lake_final
         assert load_table_parameters["delta_records_file_path"] == s3_table_active.dir_landing_data
-        assert load_table_parameters["technical_key"] == ["m3d_timestamp", "datapakid", "partno", "record"]
+        assert load_table_parameters["technical_key"] == ["actrequest_timestamp", "datapakid", "partno", "record"]
         assert load_table_parameters["business_key"] == s3_table_active.business_key
 
         if s3_table_active.partitioned_by in Util.defined_partitions:
@@ -200,8 +197,6 @@ class TestLoadTableDeltaS3(S3TableTestBase):
     @patch("moto.emr.models.ElasticMapReduceBackend.describe_step", return_value=FakeStep("COMPLETED"))
     @patch("m3d.hadoop.core.spark_executor.SparkExecutor._remove_parameter_json")
     def test_load_table_delta_external_spark_parameters(self, remove_json_patch, _0, _1):
-        # responses.add_passthru(self.default_server_url)
-
         destination_system = "bdp"
         destination_database = "emr_test"
         destination_environment = "dev"
@@ -283,7 +278,7 @@ class TestLoadTableDeltaS3(S3TableTestBase):
         assert load_table_parameters["active_records_table_lake"] == s3_table_active.db_table_lake
         assert load_table_parameters["active_records_dir_lake"] == s3_table_active.dir_lake_final
         assert load_table_parameters["delta_records_file_path"] == s3_table_active.dir_landing_data
-        assert load_table_parameters["technical_key"] == ["m3d_timestamp", "datapakid", "partno", "record"]
+        assert load_table_parameters["technical_key"] == ["actrequest_timestamp", "datapakid", "partno", "record"]
         assert load_table_parameters["business_key"] == s3_table_active.business_key
 
         if s3_table_active.partitioned_by in Util.defined_partitions:

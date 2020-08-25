@@ -81,10 +81,10 @@ function exec_command_within_container() {
 
   if [[ -z "$LOCAL_IS_INTERACTIVE" ]]; then
     echo "Executing command within container: $LOCAL_CMD"
-    docker exec "$LOCAL_CONTAINER_INSTANCE_NAME" bash -c "cd /root/workspace/${LOCAL_PROJECT_NAME} && ${LOCAL_CMD}"
+    docker exec "$LOCAL_CONTAINER_INSTANCE_NAME" bash -c "cd /m3d/workspace/${LOCAL_PROJECT_NAME} && ${LOCAL_CMD}"
   else
     echo "Executing command within container in interactive mode: $LOCAL_CMD"
-    docker exec -it "$LOCAL_CONTAINER_INSTANCE_NAME" bash -c "cd /root/workspace/${LOCAL_PROJECT_NAME} && ${LOCAL_CMD}"
+    docker exec -it "$LOCAL_CONTAINER_INSTANCE_NAME" bash -c "cd /m3d/workspace/${LOCAL_PROJECT_NAME} && ${LOCAL_CMD}"
   fi
 }
 
