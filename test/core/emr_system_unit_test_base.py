@@ -17,12 +17,11 @@ from test.test_util.boto3_util import Boto3Util
 class EMRSystemUnitTestBase(UnitTestBase):
     """
     Base class for EMRSystem tests . It prepares the configuration by providing a helper function which constructs test
-    case specific config.json, scon_emr and scon_mdp configuration files.
+    case specific config.json, scon_emr configuration.
     """
 
     default_m3d_config = "config/m3d/config.json"
     default_scon_emr = "config/system/scon-bdp-emr_test.json"
-    default_scon_mdp = "config/system/scon-mdp-mdp_test.json"
 
     default_server_host = "localhost"
     default_server_port = 52334
@@ -30,12 +29,12 @@ class EMRSystemUnitTestBase(UnitTestBase):
 
     default_aws_region = "eu-west-1"
     default_log_bucket = "log-bucket"
-    default_dev_landing_bucket = "adidas-dev-landing"
-    default_dev_lake_bucket = "adidas-dev-lake"
-    default_dev_mart_cal_bucket = "adidas-dev-mart_cal"
-    default_dev_metadata_bucket = "adidas-dev-metadata"
-    default_dev_inbound_bucket = "adidas-dev-inbound"
-    default_dev_application_bucket = "adidas-dev-application"
+    default_dev_landing_bucket = "m3d-dev-landing"
+    default_dev_lake_bucket = "m3d-dev-lake"
+    default_dev_mart_cal_bucket = "m3d-dev-mart_cal"
+    default_dev_metadata_bucket = "m3d-dev-metadata"
+    default_dev_inbound_bucket = "m3d-dev-inbound"
+    default_dev_application_bucket = "m3d-dev-application"
 
     @staticmethod
     def dump_aws_credentials(aws_credentials, aws_credentials_file_path):
@@ -57,7 +56,7 @@ class EMRSystemUnitTestBase(UnitTestBase):
 
     def env_setup(self, tmpdir, destination_system, destination_database, destination_environment):
         """
-        This functions creates test specific config.json, scon_emr and scon_mdp configuration files in provided tmpdir.
+        This functions creates test specific config.json, scon_emr configuration file in provided tmpdir.
         Directory structure will resemble that of config directory found in root folder of this repository.
 
             - config.json will be changed to point to a test specific configuration files.
@@ -87,7 +86,6 @@ class EMRSystemUnitTestBase(UnitTestBase):
         config_system_dir = config_dir.mkdir(tag_system)
         config_credentials_dir = config_dir.mkdir(tag_credentials)
 
-        # m3d_config_dict["tags"]["s3a_protocol"] = m3d_config_dict["tags"]["hdfs_protocol"]
         m3d_config_dict["tags"]["config"] = str(config_dir)
         m3d_config_dict["dir_exec"] = str(self.local_run_dir.mkdir("tmp"))
         m3d_config_file = config_dir.mkdir("m3d").join("config.json")

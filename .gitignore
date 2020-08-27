@@ -1,6 +1,9 @@
+*.yml
 *.iml
 *.pyc
 config/credentials/*
+config/keytab/*
+config/aws/*
 .idea/*
 .cache/*
 .pytest_cache/*

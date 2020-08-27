@@ -377,7 +377,7 @@ class TestAlgorithmFixedLengthStringExtractor(EMRSystemUnitTestBase):
 
     @staticmethod
     def _create_algorithm_configuration(acon_dict):
-        return AlgorithmConfigurationHadoop("partition_materialization", acon_dict)
+        return AlgorithmConfigurationHadoop("fixed_length_string_extractor", acon_dict)
 
     @staticmethod
     def _create_full_table_name(table_name):

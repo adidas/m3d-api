@@ -1,7 +1,6 @@
 from m3d.exceptions.m3d_exceptions import M3DException
 
 
-# ToDo: Rename to M3DEMRException ?
 class M3DAWSAPIException(M3DException):
     def __init__(self, *args, **kwargs):
         super(M3DAWSAPIException, self).__init__(*args, **kwargs)

@@ -26,6 +26,7 @@ def check_emr_cluster_client(func):
     :param func: member function of EMRSystem for which it will do the check
     :return: None. Throws M3DEMRException if emr_cluster_client member of EMRSystem is None
     """
+
     def wrapper(*args, **kwargs):
         emr_system = args[0]  # this is self
 
@@ -127,6 +128,7 @@ class EMRSystem(DataSystem):
         self.subdir_header = params_system["subdir"]["header"]
         self.subdir_config = params_system["subdir"]["config"]
         self.subdir_data = params_system["subdir"]["data"]
+        self.subdir_delta_table = params_system["subdir"]["delta_table"]
         self.subdir_data_backup = DataSystem.DirectoryName.DATA_BACKUP
         self.subdir_error = params_system["subdir"]["error"]
         self.subdir_work = params_system["subdir"]["work"]
@@ -136,6 +138,7 @@ class EMRSystem(DataSystem):
         self.subdir_loading = params_system["subdir"]["loading"]
         self.subdir_full_load = params_system["subdir"]["full_load"]
         self.subdir_delta_load = params_system["subdir"]["delta_load"]
+        self.subdir_delta_lake_load = params_system["subdir"]["delta_lake_load"]
         self.subdir_append_load = params_system["subdir"]["append_load"]
         self.subdir_black_whole = params_system["subdir"]["black_whole"]
         self.subdir_credentials = params_system["subdir"]["credentials"]
@@ -190,7 +193,7 @@ class EMRSystem(DataSystem):
             self.spark_jar_name
         )
 
-        # AWSFactoryS3Wrapper will do the routing of methods to correct underlying S3Util object.
+        # AWSS3CredentialsWrapper will do the routing of methods to correct underlying S3Util object.
         self.s3_util = AWSS3CredentialsWrapper(
             [self.bucket_application, self.bucket_log],
             [self.bucket_landing, self.bucket_lake, self.bucket_mart_cal],
@@ -207,11 +210,11 @@ class EMRSystem(DataSystem):
         else:
             self.emr_cluster_client = None
 
-    def create_table(self, destination_table):
+    def create_table(self, destination_table, lake_table_location_prefix):
         from m3d.hadoop.emr.s3_table import S3Table
         full_table_name = "{}.{}".format(self.db_lake, destination_table)
         self.add_cluster_tag(self.EMRClusterTag.TARGET_TABLE, full_table_name)
-        S3Table(self, destination_table).create_tables()
+        S3Table(self, destination_table).create_tables(lake_table_location_prefix)
 
     def drop_table(self, destination_table):
         from m3d.hadoop.emr.s3_table import S3Table
@@ -231,17 +234,17 @@ class EMRSystem(DataSystem):
         self.add_cluster_tag(self.EMRClusterTag.TARGET_DATASET, full_dataset_name)
         SemistructuredDataSet(self, destination_dataset).drop_datasets()
 
-    def create_lake_out_view(self, destination_table):
+    def create_out_view(self, destination_table):
         from m3d.hadoop.emr.s3_table import S3Table
         full_table_name = "{}.{}".format(self.db_lake_out, destination_table)
         self.add_cluster_tag(self.EMRClusterTag.TARGET_VIEW, full_table_name)
-        S3Table(self, destination_table).create_lake_out_view()
+        S3Table(self, destination_table).create_out_view()
 
-    def drop_lake_out_view(self, destination_table):
+    def drop_out_view(self, destination_table):
         from m3d.hadoop.emr.s3_table import S3Table
         full_table_name = "{}.{}".format(self.db_lake_out, destination_table)
         self.add_cluster_tag(self.EMRClusterTag.TARGET_VIEW, full_table_name)
-        S3Table(self, destination_table).drop_lake_out_view()
+        S3Table(self, destination_table).drop_out_view()
 
     def truncate_table(self, destination_table):
         from m3d.hadoop.emr.s3_table import S3Table

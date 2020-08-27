@@ -10,6 +10,7 @@ class HiveTable(table.Table):
     class TableLoadType(object):
         FULL = "FullLoad"
         DELTA = "DeltaLoad"
+        DELTALAKE = "DeltaLakeLoad"
         APPEND = "AppendLoad"
 
     def __init__(
@@ -78,7 +79,7 @@ class HiveTable(table.Table):
                 target_partitions = [(matched_columns[0][0], matched_columns[0][1])]
                 return create_statement(columns, target_partitions)
             else:
-                raise Exception("Partitioned field doesn't match any column".format(self.partitioned_by))
+                raise Exception("Partitioned field {} doesn't match any column".format(self.partitioned_by))
         else:
             return create_statement(self.columns_lake)
 
@@ -96,8 +97,8 @@ class HiveTable(table.Table):
         else:
             return self.partitioned_by
 
-    def create_tables(self):
+    def create_tables(self, table_location_prefix):
         raise NotImplementedError("Subclasses should implement HiveTable.create_tables() method.")
 
-    def create_lake_out_view(self):
-        raise NotImplementedError("Subclasses should implement HiveTable.create_lake_out_view() method.")
+    def create_out_view(self):
+        raise NotImplementedError("Subclasses should implement HiveTable.create_out_view() method.")

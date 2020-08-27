@@ -43,10 +43,10 @@ class TestEMRSystem(S3TableTestBase):
             "error": "error"
           }},
           "s3_buckets": {{
-            "landing": "adidas-da-bdp-prod-landing",
-            "lake": "adidas-da-bdp-prod-lake",
-            "mart_cal": "adidas-da-bdp-prod-mart-cal",
-            "application": "adidas-da-landing-application",
+            "landing": "m3d-da-bdp-prod-landing",
+            "lake": "m3d-da-bdp-prod-lake",
+            "mart_cal": "m3d-da-bdp-prod-mart-cal",
+            "application": "m3d-da-landing-application",
             "log": "io.3stripes.factory.prod.ireland.infrastructure-logs"
           }},
           "s3_deployment_dir_base": "/m3d-prod/"
@@ -64,11 +64,11 @@ class TestEMRSystem(S3TableTestBase):
             "error": "error"
           }},
           "s3_buckets": {{
-            "landing": "adidas-da-bdp-test-landing",
-            "lake": "adidas-da-bdp-test-lake",
-            "mart_cal": "adidas-da-bdp-test-mart-cal",
+            "landing": "m3d-da-bdp-test-landing",
+            "lake": "m3d-da-bdp-test-lake",
+            "mart_cal": "m3d-da-bdp-test-mart-cal",
             "metadata": "das-lab3-management-test",
-            "application": "adidas-da-landing-application",
+            "application": "m3d-da-landing-application",
             "log": "io.3stripes.factory.test.ireland.infrastructure-logs"
           }},
           "s3_deployment_dir_base": "/m3d-test/"
@@ -86,11 +86,11 @@ class TestEMRSystem(S3TableTestBase):
             "error": "error"
           }},
           "s3_buckets": {{
-            "landing": "adidas-da-bdp-dev-landing",
-            "lake": "adidas-da-bdp-dev-lake",
-            "mart_cal": "adidas-da-bdp-dev-mart-cal",
+            "landing": "m3d-da-bdp-dev-landing",
+            "lake": "m3d-da-bdp-dev-lake",
+            "mart_cal": "m3d-da-bdp-dev-mart-cal",
             "metadata": "das-lab3-management-dev",
-            "application": "adidas-da-landing-application",
+            "application": "m3d-da-landing-application",
             "log": "io.3stripes.factory.dev.ireland.infrastructure-logs"
           }},
           "s3_deployment_dir_base": "/m3d-dev/"
@@ -117,6 +117,7 @@ class TestEMRSystem(S3TableTestBase):
 
       "subdir": {{
         "data": "test_data/",
+        "delta_table": "delta_table/",
         "error": "test_error/",
         "log": "test_log/",
         "work": "test_work/",
@@ -128,6 +129,7 @@ class TestEMRSystem(S3TableTestBase):
         "loading": "test_loading/",
         "full_load": "test_full_load/",
         "delta_load": "test_delta_load/",
+        "delta_lake_load": "test_delta_lake_load/",
         "append_load": "test_append_load/",
         "black_whole": "test_black_whole/",
         "credentials": "test_credentials/",
@@ -156,9 +158,8 @@ class TestEMRSystem(S3TableTestBase):
 
     @pytest.mark.emr
     @patch('m3d.system.abstract_system.AbstractSystem.__init__')
-    @patch('m3d.system.metadata_system.MetadataSystem')
     @patch.object(EMRSystem, 'config_service', new=MockConfigService, spec=None, create=True)
-    def test_parses_basic_attributes_from_system_config_file(self, _, __):
+    def test_parses_basic_attributes_from_system_config_file(self, _):
         """
         Test case checks that all relevant key-values are extracted from sconx file and assigned to correct member
         variables of EMRSystem object.
@@ -189,9 +190,9 @@ class TestEMRSystem(S3TableTestBase):
         emr_system = EMRSystem(*self.test_emr_system_arguments)
 
         expected_system_params = {
-            "bucket_landing": "adidas-da-bdp-test-landing",
-            "bucket_lake": "adidas-da-bdp-test-lake",
-            "bucket_mart_cal": "adidas-da-bdp-test-mart-cal",
+            "bucket_landing": "m3d-da-bdp-test-landing",
+            "bucket_lake": "m3d-da-bdp-test-lake",
+            "bucket_mart_cal": "m3d-da-bdp-test-mart-cal",
             "bucket_log": "io.3stripes.factory.test.ireland.infrastructure-logs",
 
             "default_ebs_size": "128",
@@ -212,6 +213,7 @@ class TestEMRSystem(S3TableTestBase):
             "subdir_header": "test_header/",
             "subdir_config": "test_config/",
             "subdir_data": "test_data/",
+            "subdir_delta_table": "delta_table/",
             "subdir_data_backup": "data_backup/",
             "subdir_error": "test_error/",
             "subdir_work": "test_work/",
@@ -221,6 +223,7 @@ class TestEMRSystem(S3TableTestBase):
             "subdir_loading": "test_loading/",
             "subdir_full_load": "test_full_load/",
             "subdir_delta_load": "test_delta_load/",
+            "subdir_delta_lake_load": "test_delta_lake_load/",
             "subdir_append_load": "test_append_load/",
             "subdir_black_whole": "test_black_whole/",
             "subdir_credentials": "test_credentials/",
@@ -232,22 +235,22 @@ class TestEMRSystem(S3TableTestBase):
 
             "spark_jar_name": "test_jar.jar",
 
-            "dir_apps": "s3://adidas-da-landing-application/m3d-test/test_environment/test_apps/",
-            "dir_apps_algorithm": "s3://adidas-da-landing-application/m3d-test/"
+            "dir_apps": "s3://m3d-da-landing-application/m3d-test/test_environment/test_apps/",
+            "dir_apps_algorithm": "s3://m3d-da-landing-application/m3d-test/"
                                   "test_environment/test_apps/test_m3d_engine/",
-            "dir_apps_loading": "s3://adidas-da-landing-application/m3d-test/test_environment/"
+            "dir_apps_loading": "s3://m3d-da-landing-application/m3d-test/test_environment/"
                                 "test_apps/test_loading/",
 
-            "dir_tmp_s3": "s3://adidas-da-landing-application/m3d-test/test_environment/test_tmp/",
+            "dir_tmp_s3": "s3://m3d-da-landing-application/m3d-test/test_environment/test_tmp/",
             "dir_tmp_local": "/test_tmp/",
             "spark_jar_path":
-                "s3://adidas-da-landing-application/m3d-test/test_environment/m3d/" +
+                "s3://m3d-da-landing-application/m3d-test/test_environment/m3d/" +
                 "test_subdir_projects_m3d_api/test_jar.jar",
 
             "dir_m3d_api_deployment":
-                "s3://adidas-da-landing-application/m3d-test/test_environment/m3d/test_subdir_projects_m3d_api",
+                "s3://m3d-da-landing-application/m3d-test/test_environment/m3d/test_subdir_projects_m3d_api",
             "dir_metadata_deployment":
-                "s3://adidas-da-landing-application/m3d-test/test_environment/metadata/test_subdir_projects_m3d_api"
+                "s3://m3d-da-landing-application/m3d-test/test_environment/metadata/test_subdir_projects_m3d_api"
         }
 
         for param in expected_system_params.keys():

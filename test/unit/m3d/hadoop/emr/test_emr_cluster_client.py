@@ -425,12 +425,9 @@ class TestEMRClusterClient(UnitTestBase):
 
         assert len(step_ids) == 3
 
-        # Because of a bug in moto step ids are returned in the same order as submission.
-        # In reality the order should be reversed. So no because of this we have to compare with reverse order.
-        # ToDo: Change comparison order once bug in boto is fixed, https://github.com/spulec/moto/issues/1866
-        assert step_ids[2] == emr_step_id_0
-        assert step_ids[1] == emr_step_id_1
-        assert step_ids[0] == emr_step_id_2
+        assert emr_step_id_0 == step_ids[2]
+        assert emr_step_id_1 == step_ids[1]
+        assert emr_step_id_2 == step_ids[0]
 
     @pytest.mark.emr
     def test_get_step_output_path(self):

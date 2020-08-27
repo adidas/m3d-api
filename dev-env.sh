@@ -8,7 +8,7 @@ CONTAINER_IMAGE_NAME="$PROJECT_NAME"
 
 PARAM_WORKSPACE=(    "workspace"   "w" "m3d-engine code directory (must be the same within the container life-cycle)")
 PARAM_TEST_TYPE=(    "test-type"   "t" "type of tests to run, possible values are [unit|integration|all]")
-PARAM_TEST_MARK=(    "test-mark"   "m" "pytest mark for filtering tests, possible values are [bdp|emr|algo|oracle]")
+PARAM_TEST_MARK=(    "test-mark"   "m" "pytest mark for filtering tests, possible values are [bdp|emr|algo]")
 OPTION_HELP=(        "help"        "h" "show help message for the command")
 OPTION_INTERACTIVE=( "interactive" "i" "use interactive mode and allocate pseudo-TTY when executing a command inside the container")
 
@@ -152,7 +152,7 @@ elif [[ "$ACTION" == "$ARG_ACTION_CONTAINER_RUN" ]]; then
   echo "Running the container $CONTAINER_INSTANCE_NAME ..."
   validate_args_are_empty "$HELP_STRING" "${OTHER_ARGS[@]}"
 
-  docker run -t -d --name "$CONTAINER_INSTANCE_NAME" -v "${WORKSPACE}:/root/workspace/${PROJECT_NAME}" "$CONTAINER_IMAGE_NAME"
+  docker run -t -d --name "$CONTAINER_INSTANCE_NAME" -v "${WORKSPACE}:/m3d/workspace/${PROJECT_NAME}" "$CONTAINER_IMAGE_NAME"
 
 # clean pyc-files in the project directory
 elif [[ "$ACTION" == "$ARG_ACTION_PROJECT_CLEAN" ]]; then
@@ -199,7 +199,7 @@ elif [[ "$ACTION" == "$ARG_ACTION_PROJECT_TEST" ]]; then
   validate_args_are_empty "$HELP_STRING" "${OTHER_ARGS[@]}"
 
   AVAILABLE_TEST_TYPES=("all" "unit" "integration")
-  AVAILABLE_TEST_MARKS=("bdp" "emr" "algo" "oracle")
+  AVAILABLE_TEST_MARKS=("bdp" "emr" "algo")
 
   if [[ -z "$TEST_TYPE" ]]; then
     RUN_TESTS_CMD="python3 ./test/test_runner.py all"

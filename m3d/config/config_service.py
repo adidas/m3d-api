@@ -7,18 +7,14 @@ class ConfigService(object):
     class Prefixes(object):
         ACON = "acon"
         SCON = "scon"
-        DDIC = "ddic"
         TCONX = "tconx"
 
     class Protocols(object):
-        S3A = "s3a://"
         S3 = "s3://"
 
     class Extensions(object):
         JSON = ".json"
-        SQL = ".sql"
         HQL = ".hql"
-        SH = ".sh"
 
     def __init__(self, config):
         # store parameters
@@ -43,7 +39,9 @@ class ConfigService(object):
         # prefixes for algorithm configuration files
         self.tag_full_load = params["tags"]["full_load"]
         self.tag_delta_load = params["tags"]["delta_load"]
+        self.tag_delta_lake_load = params["tags"]["delta_lake_load"]
         self.tag_append_load = params["tags"]["append_load"]
+        self.tag_decom_gzip = params["tags"]["decom_gzip"]
 
         # suffixes for staging and swap tables
         self.tag_table_suffix_stage = params["tags"]["table_suffix_stage"]
@@ -60,7 +58,6 @@ class ConfigService(object):
         self.tag_aws = params["tags"]["aws"]
 
         # protocol tags and required constants for them
-        # TODO: Remove hdfs tag from config
         self.tag_file = params["tags"]["file"]
 
     def get_scon_path(self, source_system, database):
@@ -179,27 +176,5 @@ class ConfigService(object):
             destination_environment,
             filename
         )
-
-        return base_path
-
-    def get_ddic_path(self, source_system, src_database, source_schema, source_table):
-        """
-        Return ddic path for upload system export
-
-        :param source_system source system code
-        :param src_database source database code
-        :param source_schema upload schema code
-        :param source_table: upload table code
-        :return: ddic file for upload system export
-        """
-        filename = "-".join([
-            ConfigService.Prefixes.DDIC,
-            source_system,
-            src_database,
-            source_schema,
-            source_table
-        ]) + ConfigService.Extensions.CSV
-
-        base_path = os.path.join(self.tag_config, self.tag_table, self.tag_upload, source_system, filename)
 
         return base_path

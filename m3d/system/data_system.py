@@ -5,17 +5,12 @@ from m3d.system import abstract_system
 
 class DataSystem(abstract_system.AbstractSystem):
     class SystemTechnology(object):
-        ORACLE = "oracle"
         HIVE = "hive"
 
     class StorageType(object):
-        HANA = "hana"
-        ORACLE = "oracle"
         S3 = "s3"
 
     class DatabaseType(object):
-        HANA = "hana"
-        ORACLE = "oracle"
         EMR = "emr"
 
     class DirectoryName(object):

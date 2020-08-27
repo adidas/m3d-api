@@ -1,7 +1,7 @@
 M3D API
 =======
 
-![](static/images/m3d_logo.png)
+![M3D logo](/static/images/m3d_logo.png)
 
 **M3D** stands for _Metadata Driven Development_ and is a cloud and platform agnostic framework for the automated creation, management and governance of metadata and data flows from multiple source to multiple target systems. The main features and design goals of M3D are:
 
@@ -41,7 +41,7 @@ These are the layers defined in the M3D architecture:
 
 Graphically, the architecture of M3D looks like this:
 
-![](static/images/m3d_layers.svg)
+![M3D Architecture](/static/images/m3d_layers.png)
 
 
 ### AWS Prerequisites for Out of the Box Usage
@@ -117,7 +117,6 @@ For advanced users, you may use [conda](https://conda.io) for installing M3D by 
                 "upload": "upload",
                 "pushdown": "pushdown",
                 "aws": "aws",
-                "hdfs": "hdfs",
                 "file": "file"
             },
             "data_dict_delimiter": "|"
@@ -173,6 +172,7 @@ The steps are the following:
         -destination_database emr_database \
         -destination_environment test \
         -destination_table table_name \
+        -destination_table_location_prefix table_location_prefix \
         -emr_cluster_id id-of-started-cluster
     ```
     

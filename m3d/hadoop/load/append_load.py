@@ -28,14 +28,27 @@ class AppendLoad(LoadHadoop):
         # data_type can be one of DataType.STRUCTURED, DataType.SEMISTRUCTURED or DataType.UNSTRUCTURED
         data_type = self.load_params.get("data_type", None)
         reader_mode = self.load_params.get("reader_mode", None)
+        # property to ignore partitions in schema check when using using failfast and permissive (they are introduced
+        # artificially in m3d)
+        drop_date_derived_columns = self.load_params.get("drop_date_derived_columns", None)
+        # property to add corrupt_record column when using permissive (for debug purposes)
+        add_corrupt_record_column = self.load_params.get("add_corrupt_record_column", None)
         metadata_update_strategy = self.load_params.get("metadata_update_strategy", None)
+        partition_column = self.load_params.get("partition_column", None)
+        partition_column_format = self.load_params.get("partition_column_format", None)
+        date_format = self.load_params.get("date_format", None)
+        regex_filename = self.load_params.get("regex_filename", None)
 
-        if hasattr(self._dataset, "delimiter"):
+        delimiter = self.load_params.get("delimiter", None)
+        if delimiter:
+            delimiter = bytes(delimiter, "utf-8").decode("unicode_escape")
+        elif hasattr(self._dataset, "delimiter"):
             delimiter = bytes(self._dataset.delimiter, "utf-8").decode("unicode_escape")
         else:
             delimiter = None
 
-        if hasattr(self._dataset, "header_lines"):
+        has_header = self.load_params.get("has_header", None)
+        if has_header is None and hasattr(self._dataset, "header_lines"):
             has_header = int(self._dataset.header_lines) > 0
         else:
             has_header = None
@@ -45,7 +58,7 @@ class AppendLoad(LoadHadoop):
             self._dataset.dir_landing_final,
             self._dataset.dir_landing_header,
             self.load_params["target_partitions"],
-            self.load_params["regex_filename"],
+            regex_filename=regex_filename,
             metadata_update_strategy=metadata_update_strategy,
             file_format=file_format,
             delimiter=delimiter,
@@ -57,7 +70,12 @@ class AppendLoad(LoadHadoop):
             verify_schema=verify_schema,
             target_dir=self._dataset.dir_lake_final,
             data_type=data_type,
-            reader_mode=reader_mode
+            reader_mode=reader_mode,
+            drop_date_derived_columns=drop_date_derived_columns,
+            add_corrupt_record_column=add_corrupt_record_column,
+            partition_column=partition_column,
+            partition_column_format=partition_column_format,
+            date_format=date_format
         )
 
         self._validate_params(params)
@@ -77,7 +95,7 @@ class AppendLoad(LoadHadoop):
 
     @staticmethod
     def _validate_params(params):
-        if len(params.target_partitions) != len(params.regex_filename):
+        if not hasattr(params, "partition_column") and len(params.target_partitions) != len(params.regex_filename):
             message = "Lengths of target_partitions and regex_filename do not match:\n{}\n{}".format(
                 params.target_partitions,
                 params.regex_filename
@@ -93,8 +111,8 @@ class AppendLoadConfiguration(object):
             source_dir,
             header_dir,
             target_partitions,
-            regex_filename,
             file_format,
+            regex_filename=None,
             metadata_update_strategy=None,
             delimiter=None,
             has_header=None,
@@ -105,13 +123,17 @@ class AppendLoadConfiguration(object):
             verify_schema=None,
             target_dir=None,
             data_type=None,
-            reader_mode=None
+            reader_mode=None,
+            drop_date_derived_columns=None,
+            add_corrupt_record_column=None,
+            partition_column=None,
+            partition_column_format=None,
+            date_format=None,
     ):
         self.target_table = target_table
         self.source_dir = source_dir
         self.header_dir = header_dir
         self.target_partitions = target_partitions
-        self.regex_filename = regex_filename
         self.file_format = file_format
 
         if metadata_update_strategy is not None:
@@ -136,3 +158,15 @@ class AppendLoadConfiguration(object):
             self.data_type = data_type
         if reader_mode is not None:
             self.reader_mode = reader_mode
+        if drop_date_derived_columns is not None:
+            self.drop_date_derived_columns = drop_date_derived_columns
+        if add_corrupt_record_column is not None:
+            self.add_corrupt_record_column = add_corrupt_record_column
+        if partition_column is not None:
+            self.partition_column = partition_column
+        if partition_column_format is not None:
+            self.partition_column_format = partition_column_format
+        if date_format is not None:
+            self.date_format = date_format
+        if regex_filename is not None:
+            self.regex_filename = regex_filename

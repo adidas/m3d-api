@@ -6,7 +6,6 @@ import os
 import subprocess
 
 from m3d.exceptions.m3d_exceptions import M3DExecutionException, M3DIOException
-from m3d.util.hql_generator import HQLGenerator
 
 
 class Util(object):
@@ -71,8 +70,7 @@ class Util(object):
         """
 
         if os.system(command) != 0:
-            # TODO: change to M3DExecutionException
-            raise Exception(command)
+            raise M3DExecutionException(command)
 
     @staticmethod
     def execute_subprocess(command, redirect_stderr=True):
@@ -163,44 +161,3 @@ class Util(object):
 
         cols = Util.get_target_partitions_list(partitioned_by)
         return list(map(lambda x: (x, "smallint"), cols))
-
-    @staticmethod
-    def oracle_view_to_hive_view(oracle_view_ddl):
-        """
-        Transform Oracle create view statement into Hive create view statement.
-
-        :param oracle_view_ddl: oracle create view statement
-        :return: corresponding hive create view statement
-        """
-
-        tag_create_view_oracle = "CREATE OR REPLACE FORCE EDITIONABLE VIEW"
-        tag_create_view_hive = "CREATE VIEW"
-
-        # Remove comments
-        hive_view_ddl = functools.reduce(lambda x, y: x + " " + y,
-                                         filter(lambda line: not line.startswith("--") and line,
-                                                map(lambda x: x.strip(), oracle_view_ddl.split("\n"))
-                                                )
-                                         )
-
-        # Clean up (in this order)
-        hive_view_ddl = hive_view_ddl.replace("\t", " ")
-        hive_view_ddl = hive_view_ddl.replace("(+)", "")
-        hive_view_ddl = hive_view_ddl.replace(" ,", ",")
-        hive_view_ddl = hive_view_ddl.replace(" =", "=")
-        hive_view_ddl = hive_view_ddl.replace("= ", "=")
-        hive_view_ddl = hive_view_ddl.replace(",", ", ")
-        hive_view_ddl = hive_view_ddl.replace("\"", HQLGenerator.ESCAPE_KEYWORDS_CHAR)
-
-        # let's get rid of multiple consecutive spaces
-        double_space = "  "
-        single_space = " "
-        while double_space in hive_view_ddl:
-            hive_view_ddl = hive_view_ddl.replace(double_space, single_space)
-
-        # Replace Oracle create view statement with Hive one
-        hive_view_ddl = hive_view_ddl.replace(
-            tag_create_view_oracle,
-            tag_create_view_hive)
-
-        return hive_view_ddl

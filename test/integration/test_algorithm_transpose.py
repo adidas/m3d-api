@@ -16,9 +16,9 @@ class TestAlgorithmNestedFlattenerEMR(EMRSystemUnitTestBase):
     destination_system = "bdp"
     destination_database = "emr_test"
     destination_environment = "dev"
-    algorithm_instance = "nested_flattener"
+    algorithm_instance = "transpose"
 
-    test_acon = "test/resources/test_algorithm_nested_flattener_emr/acon-emr_test-nested_flattener.json"
+    test_acon = "test/resources/test_algorithm_transpose_emr/acon-emr_test-transpose.json"
 
     def env_setup(
             self,
@@ -62,7 +62,6 @@ class TestAlgorithmNestedFlattenerEMR(EMRSystemUnitTestBase):
         )
 
         schema_lake = scon_emr_dict["environments"][self.destination_environment]["schemas"]["lake"]
-        bucket_lake = scon_emr_dict["environments"][self.destination_environment]["s3_buckets"]["lake"]
 
         spark_options = {
             "spark.driver.memory": "5G",
@@ -126,7 +125,7 @@ class TestAlgorithmNestedFlattenerEMR(EMRSystemUnitTestBase):
 
         assert spark_step.args[-5] == "com.adidas.analytics.AlgorithmFactory"
 
-        assert spark_step.args[-3] == "NestedFlattener"
+        assert spark_step.args[-3] == "Transpose"
         spark_json_s3 = spark_step.args[-2]
 
         assert spark_step.args[-1] == "s3"
@@ -141,13 +140,13 @@ class TestAlgorithmNestedFlattenerEMR(EMRSystemUnitTestBase):
         add_tags_patch_call_args_list = add_tags_patch.call_args_list
         assert len(add_tags_patch_call_args_list) == 2
         assert sorted(add_tags_patch_call_args_list[0][0][0], key=lambda x: x["Key"]) == sorted([
-            {"Key": "SourceTable", "Value": "s3://m3d-dev-lake/nest/nest_test/data"},
-            {"Key": "TargetTable", "Value": "dev_lake.nest_flattened"}
+            {"Key": "SourceTable", "Value": schema_lake + "." + "pretranspose"},
+            {"Key": "TargetTable", "Value": schema_lake + "." + "transpose"}
         ], key=lambda x: x["Key"])
         assert sorted(add_tags_patch_call_args_list[1][0][0], key=lambda x: x["Key"]) == sorted([
             {"Key": "ApiMethod", "Value": "run_algorithm"},
-            {"Key": "AlgorithmClass", "Value": "AlgorithmNestedFlattener"},
-            {"Key": "AlgorithmInstance", "Value": "nested_flattener"}
+            {"Key": "AlgorithmClass", "Value": "AlgorithmTranspose"},
+            {"Key": "AlgorithmInstance", "Value": "transpose"}
         ], key=lambda x: x["Key"])
 
         # check content of config.json file
@@ -155,26 +154,8 @@ class TestAlgorithmNestedFlattenerEMR(EMRSystemUnitTestBase):
 
         spark_json_dict = json.loads(spark_json_content)
 
-        assert spark_json_dict["source_location"] == os.path.join(ConfigService.Protocols.S3, bucket_lake,
-                                                                  "nest/nest_test/data")
-        assert spark_json_dict["target_table"] == schema_lake + "." + "nest_flattened"
-        assert spark_json_dict["fields_to_flatten"] == [
-            "user_attributes",
-            "device_info",
-            "events",
-            "events__data",
-            "events__data__device_current_state"
-        ]
-        assert spark_json_dict["column_mapping"] == {
-            "batch_id": "batch_id",
-            "environment": "environment",
-            "timestamp_unixtime_ms": "event_timestamp",
-            "message_type": "message_type",
-            "device_info__brand": "device_brand",
-            "device_info__network_country": "network_country",
-            "events__event_type": "event_type",
-            "events__data__screen_name": "screen_name",
-            "events__data__device_current_state__total_system_memory_usage_bytes": "memory_usage_bytes"
-        }
-        assert spark_json_dict["chars_to_replace"] == "[.:#]+"
-        assert spark_json_dict["replacement_char"] == "_"
+        assert spark_json_dict["source_table"] == schema_lake + "." + "pretranspose"
+        assert spark_json_dict["target_table"] == schema_lake + "." + "transpose"
+        assert spark_json_dict["group_by_column"] == ["product", "articleNo", "FactoryID"]
+        assert spark_json_dict["pivot_column"] == "name"
+        assert spark_json_dict["aggregation_column"] == "value"

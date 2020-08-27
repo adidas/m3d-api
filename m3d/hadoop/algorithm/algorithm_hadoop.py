@@ -9,7 +9,6 @@ from m3d.util.util import Util
 
 class AlgorithmHadoop(object):
 
-    # TODO: "algorithm_params" should contain items from algorithm/parameters
     def __init__(self, execution_system, algorithm_instance, algorithm_params):
         """
         Initialize generic Algorithm class

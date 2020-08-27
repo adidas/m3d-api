@@ -3,9 +3,10 @@ from m3d.exceptions.m3d_exceptions import M3DUnsupportedDatabaseTypeException, M
 from m3d.hadoop.algorithm.algorithm_algorithm_template import AlgorithmAlgorithmTemplate
 from m3d.hadoop.algorithm.algorithm_configuration_hadoop import AlgorithmConfigurationHadoop
 from m3d.hadoop.algorithm.algorithm_fixed_length_string_extractor import AlgorithmFixedLengthStringExtractor
-from m3d.hadoop.algorithm.algorithm_gzip_decompression_emr import AlgorithmGzipDecompressionEMR
+from m3d.hadoop.algorithm.algorithm_gzip_decompressor import AlgorithmGzipDecompressor
 from m3d.hadoop.algorithm.algorithm_nested_flattener import AlgorithmNestedFlattener
-from m3d.hadoop.algorithm.algorithm_partition_materialization import AlgorithmPartitionMaterialization
+from m3d.hadoop.algorithm.algorithm_materialization import AlgorithmMaterialization
+from m3d.hadoop.algorithm.algorithm_transpose import AlgorithmTranspose
 from m3d.hadoop.algorithm.algorithm_scala_runner import AlgorithmScalaRunner
 from m3d.hadoop.core.spark_executor import SparkExecutor
 from m3d.hadoop.emr.emr_system import EMRSystem
@@ -52,13 +53,14 @@ class AlgorithmExecutorHadoop(SparkExecutor):
         """
 
         return {
-            "AlgorithmGzipDecompressionBytesEMR": AlgorithmGzipDecompressionEMR,
+            "AlgorithmGzipDecompressorBytes": AlgorithmGzipDecompressor,
             "AlgorithmScalaRunner": AlgorithmScalaRunner,
-            "AlgorithmPartitionFullMaterialization": AlgorithmPartitionMaterialization.FullPartitionMaterialization,
-            "AlgorithmPartitionQueryMaterialization": AlgorithmPartitionMaterialization.QueryPartitionMaterialization,
-            "AlgorithmPartitionRangeMaterialization": AlgorithmPartitionMaterialization.RangePartitionMaterialization,
+            "AlgorithmFullMaterialization": AlgorithmMaterialization.FullMaterialization,
+            "AlgorithmQueryMaterialization": AlgorithmMaterialization.QueryMaterialization,
+            "AlgorithmRangeMaterialization": AlgorithmMaterialization.RangeMaterialization,
             "AlgorithmFixedLengthStringExtractor": AlgorithmFixedLengthStringExtractor,
             "AlgorithmNestedFlattener": AlgorithmNestedFlattener,
+            "AlgorithmTranspose": AlgorithmTranspose,
             "AlgorithmAlgorithmTemplate": AlgorithmAlgorithmTemplate
         }
 

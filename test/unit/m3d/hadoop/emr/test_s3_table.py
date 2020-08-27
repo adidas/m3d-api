@@ -58,16 +58,16 @@ class Storage:
 class TestS3Table(object):
 
     LANDING_SPEC = Storage(
-        "dev_landing.test101_stg1",
+        "landing.test101_stg1",
         "bucket_landing",
-        "dev/bi/test101/data/",
+        "test/bi/test101/data/",
         ["file-00000.part", "file-00001.part"]
     )
 
     LAKE_SPEC = Storage(
-        "dev_lake.test101",
+        "lake.test101",
         "bucket_lake",
-        "dev/bi/test101/data/",
+        "test/bi/test101/data/",
         ["file-00000.part", "file-00001.part", "file-00002.part"]
     )
 

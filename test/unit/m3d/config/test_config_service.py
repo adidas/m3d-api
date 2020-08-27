@@ -13,9 +13,9 @@ class TestConfigService(UnitTestBase):
             """
             {
               "emails": [
-                "this.is@adidas-group.com",
-                "not.a@adidas-group.com",
-                "love.song@adidas.com"
+                "this.is@m3d-group.com",
+                "not.a@m3d-group.com",
+                "love.song@m3d.com"
               ],
               "dir_exec": "/tmp/",
               "python": {
@@ -32,6 +32,7 @@ class TestConfigService(UnitTestBase):
 
                 "full_load": "full_load",
                 "delta_load": "delta_load",
+                "delta_lake_load": "delta_lake_load",
                 "append_load": "append_load",
                 "oozie": "oozie",
                 "decom_gzip": "gzip_decompressor",
@@ -47,7 +48,6 @@ class TestConfigService(UnitTestBase):
                 "pushdown": "pushdown",
 
                 "aws": "aws",
-                "hdfs": "hdfs",
                 "file": "file"
               },
               "data_dict_delimiter": "|"
@@ -59,9 +59,9 @@ class TestConfigService(UnitTestBase):
 
         expected_params = {
             "emails": [
-                "this.is@adidas-group.com",
-                "not.a@adidas-group.com",
-                "love.song@adidas.com"
+                "this.is@m3d-group.com",
+                "not.a@m3d-group.com",
+                "love.song@m3d.com"
             ],
 
             "python_main": "m3d_main.pyc",
@@ -79,6 +79,7 @@ class TestConfigService(UnitTestBase):
 
             "tag_full_load": "full_load",
             "tag_delta_load": "delta_load",
+            "tag_delta_lake_load": "delta_lake_load",
             "tag_append_load": "append_load",
 
             "tag_system": "system",

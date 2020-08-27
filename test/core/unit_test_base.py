@@ -3,9 +3,6 @@ import shutil
 import logging
 
 import py
-import mock
-
-from test.test_util.oracle_util import OracleConnectionMock
 
 
 class UnitTestBase(object):
@@ -17,7 +14,8 @@ class UnitTestBase(object):
     local_run_dir = None  # py.path.local object pointing to local_case_home
 
     patches = [
-        mock.patch('cx_Oracle.connect', new=OracleConnectionMock, create=True)
+        # needed mocks can be placed here
+        # mock.patch('my_mock', new=myConnectionMock, create=True)
     ]
 
     @classmethod

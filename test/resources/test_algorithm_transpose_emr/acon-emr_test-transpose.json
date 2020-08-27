@@ -1,0 +1,14 @@
+{
+  "environment": {},
+  "algorithm": {
+    "python_class": "AlgorithmTranspose",
+    "parameters": {
+      "source_table": "pretranspose",
+      "target_table": "transpose",
+      "aggregation_column" : "value",
+      "pivot_column": "name",
+      "group_by_column": ["product", "articleNo","FactoryID"],
+      "verify_schema": true
+    }
+  }
+}

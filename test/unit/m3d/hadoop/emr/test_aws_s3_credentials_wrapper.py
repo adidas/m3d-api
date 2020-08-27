@@ -78,16 +78,16 @@ class TestAWSS3CredentialsWrapper(object):
     aws_credentials_del = AWSCredentials("access_key_id-del", "secret_access_key-del")
 
     ERROR_METHOD_NOT_SUPPORTED_TEMPLATE = \
-        "The following method is not supported for AWSFactoryS3Wrapper: {attr}()"
+        "The following method is not supported for AWSS3CredentialsWrapper: {attr}()"
     ERROR_UNKNOWN_ATTRIBUTE_TEMPLATE = \
         "{attr} is not an attribute of S3Util"
 
     ERROR_UNMANAGED_BUCKET_TEMPLATE = \
-        "AWSFactoryS3Wrapper.{attr}() has been called with arguments pointing to S3 buckets which are " \
-        "not managed by AWSFactoryS3Wrapper: {buckets}"
+        "AWSS3CredentialsWrapper.{attr}() has been called with arguments pointing to S3 buckets which are " \
+        "not managed by AWSS3CredentialsWrapper: {buckets}"
 
     ERROR_CROSS_BUCKET_ACCESS_TEMPLATE = \
-        "AWSFactoryS3Wrapper.{attr}() has been called with arguments pointing to both" \
+        "AWSS3CredentialsWrapper.{attr}() has been called with arguments pointing to both" \
         " data and applications S3 buckets, this is not supported."
 
     @staticmethod

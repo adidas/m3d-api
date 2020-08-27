@@ -121,15 +121,14 @@ class TconxHelper(object):
         return str(tconx_dir)
 
     @staticmethod
-    def get_tconx_dir_hdfs(
+    def get_tconx_dir_dfs(
             m3d_config_dict,
             scon_bdp_dict,
             destination_system,
             destination_database,
             destination_environment
     ):
-        txonc_dir_hdfs = os.path.join(
-            scon_bdp_dict["hdfs_dir_oozie"],
+        txonc_dir_dfs = os.path.join(
             m3d_config_dict["subdir_projects"]["m3d_api"],
             TconxHelper.Tags.CONFIG,
             TconxHelper.Tags.TABLE,
@@ -139,4 +138,4 @@ class TconxHelper(object):
             destination_environment
         )
 
-        return txonc_dir_hdfs
+        return txonc_dir_dfs

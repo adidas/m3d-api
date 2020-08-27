@@ -75,7 +75,7 @@ class M3DUnsupportedLoadTypeException(M3DUnsupportedDataTypeException):
 class M3DUnsupportedSystemException(M3DUnsupportedDataTypeException):
     """
     This exception is thrown when the requested service does not support the system/technology.
-    For example, some supported systems/technologies are Hive, Oracle, Exasol, etc.
+    For example: Hive...
     """
 
     def __init__(self, system, message=None):
@@ -89,8 +89,7 @@ class M3DUnsupportedSystemException(M3DUnsupportedDataTypeException):
 class M3DUnsupportedStorageException(M3DUnsupportedDataTypeException):
     """
     This exception is thrown when the requested service does not support the system/technology.
-    For example, it can be raised while calling the hdfs_table.HDFSTable().drop_tables()
-    over a non HDFS storage.
+    For example, it can be raised while calling the drop_tables over a non HDFS compatible storage.
     """
 
     def __init__(self, storage, message=None):
@@ -190,17 +189,3 @@ class M3DEMRApiException(M3DEMRException):
             message = "Error integration with EMR API"
         self.message = message
         super(M3DEMRApiException, self).__init__(message)
-
-
-class M3DReconciliationDeviationException(M3DIOException):
-    """
-    A general exception to be thrown if at least one reconciliation task for a table
-    returned a deviation from the expected result
-    The programmer is responsible to throw an appropriate message.
-    """
-
-    def __init__(self, message=None):
-        if message is None:
-            message = "Reconciliation failed."
-        self.message = message
-        super(M3DReconciliationDeviationException, self).__init__(message)

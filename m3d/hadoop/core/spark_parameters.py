@@ -4,7 +4,6 @@ import copy
 from m3d.exceptions.m3d_exceptions import M3DIllegalArgumentException
 
 
-# TODO: possibly the cleanup is required
 class SparkParameters(object):
 
     EXTERNAL_PARAMS_KEY = "spark"

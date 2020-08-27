@@ -1,4 +1,5 @@
 import json
+import logging
 
 import pytest
 from mock import patch
@@ -80,7 +81,7 @@ class TestAlgorithmGzipDecompressorEMR(S3TableTestBase):
         def run_command_in_cluster_patch(cmd, name):
             # Check command name
             assert "Running Spark Application" in str(name)
-            print("Command is: {0}".format(cmd))
+            logging.info("Command is: {0}".format(cmd))
             command_components = cmd.split()
 
             # Check algorithm name from the spark command
@@ -90,7 +91,7 @@ class TestAlgorithmGzipDecompressorEMR(S3TableTestBase):
             # Check configuration file content
             algorithm_config_file_name = command_components[-2]
             actual_config_file_content = self.get_object_content_from_s3(algorithm_config_file_name)
-            print("Actual config content: {0}".format(actual_config_file_content))
+            logging.info("Actual config content: {0}".format(actual_config_file_content))
 
             algorithm_config_file_dict = json.loads(actual_config_file_content)
 

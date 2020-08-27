@@ -1,4 +1,3 @@
-# import responses
 from mock import patch
 import logging
 import pytest
@@ -17,8 +16,6 @@ class TestDropTableS3Integration(S3TableTestBase):
     @patch("moto.emr.models.ElasticMapReduceBackend.describe_step", return_value=FakeStep("COMPLETED"))
     @patch("m3d.hadoop.emr.emr_cluster_client.EMRClusterClient._do_add_emr_cluster_tags")
     def test_check_s3_cleanup(self, add_tags_patch, _):
-        # responses.add_passthru(self.default_server_url)
-
         logging.info("Starting s3 Checkup cleanup")
 
         destination_system = "bdp"
@@ -69,7 +66,6 @@ class TestDropTableS3Integration(S3TableTestBase):
 
         test_lake_key = "{environment}/{source_system}/{table}/data/{obj_name}".format(
             environment=destination_environment,
-            db_cd=db_lake,
             source_system=source_system,
             table=table,
             obj_name=test_lake_key_filename
