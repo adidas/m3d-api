@@ -32,7 +32,7 @@ class FullLoad(LoadHadoop):
         drop_date_derived_columns = self._load_params.get("drop_date_derived_columns", None)
         # property to add corrupt_record column when using permissive (for debug purposes)
         add_corrupt_record_column = self._load_params.get("add_corrupt_record_column", None)
-        is_multiline_json = self._load_params.get("is_multiline_json", None)
+        multi_line = self._load_params.get("multi_line", None)
         schema = self._load_params.get("schema", None)
 
         full_load_params = FullLoadParams(
@@ -54,7 +54,7 @@ class FullLoad(LoadHadoop):
             additional_task=additional_task,
             file_format=file_format,
             data_type=data_type,
-            is_multiline_json=is_multiline_json,
+            multi_line=multi_line,
             schema=schema,
             output_files_num=self._load_params.get('output_files_num', None),
         )
@@ -98,7 +98,7 @@ class FullLoadParams(object):
             additional_task=None,
             file_format=None,
             data_type=None,
-            is_multiline_json=None,
+            multi_line=None,
             schema=None,
             output_files_num=None
     ):
@@ -124,8 +124,8 @@ class FullLoadParams(object):
             self.add_corrupt_record_column = add_corrupt_record_column
         if additional_task is not None:
             self.additional_task = additional_task
-        if is_multiline_json is not None:
-            self.is_multiline_json = is_multiline_json
+        if multi_line is not None:
+            self.multi_line = multi_line
         if schema is not None:
             self.schema = schema
         if file_format is not None:

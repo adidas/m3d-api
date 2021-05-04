@@ -1,7 +1,7 @@
 M3D API
 =======
 
-![M3D logo](/static/images/m3d_logo.png)
+![M3Dlogo](/static/images/m3d_logo.png)
 
 **M3D** stands for _Metadata Driven Development_ and is a cloud and platform agnostic framework for the automated creation, management and governance of metadata and data flows from multiple source to multiple target systems. The main features and design goals of M3D are:
 
@@ -41,7 +41,7 @@ These are the layers defined in the M3D architecture:
 
 Graphically, the architecture of M3D looks like this:
 
-![M3D Architecture](/static/images/m3d_layers.png)
+![M3DArchitecture](/static/images/m3d_layers.png)
 
 
 ### AWS Prerequisites for Out of the Box Usage
@@ -161,7 +161,7 @@ The steps are the following:
         -destination_database emr_database \
         -destination_environment test \
         -config /relative/to/m3d-api/config/m3d/config.json \
-        -emr_version emr-5.23.0
+        -emr_version emr-6.2.0
     ```
     
 *   Create the environment in AWS by invoking the API create\_table

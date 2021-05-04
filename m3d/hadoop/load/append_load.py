@@ -38,6 +38,7 @@ class AppendLoad(LoadHadoop):
         partition_column_format = self.load_params.get("partition_column_format", None)
         date_format = self.load_params.get("date_format", None)
         regex_filename = self.load_params.get("regex_filename", None)
+        multi_line = self.load_params.get("multi_line", None)
 
         delimiter = self.load_params.get("delimiter", None)
         if delimiter:
@@ -75,7 +76,8 @@ class AppendLoad(LoadHadoop):
             add_corrupt_record_column=add_corrupt_record_column,
             partition_column=partition_column,
             partition_column_format=partition_column_format,
-            date_format=date_format
+            date_format=date_format,
+            multi_line=multi_line
         )
 
         self._validate_params(params)
@@ -129,6 +131,7 @@ class AppendLoadConfiguration(object):
             partition_column=None,
             partition_column_format=None,
             date_format=None,
+            multi_line=None
     ):
         self.target_table = target_table
         self.source_dir = source_dir
@@ -170,3 +173,5 @@ class AppendLoadConfiguration(object):
             self.date_format = date_format
         if regex_filename is not None:
             self.regex_filename = regex_filename
+        if multi_line is not None:
+            self.multi_line = multi_line

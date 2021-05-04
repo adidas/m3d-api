@@ -121,7 +121,7 @@
     "main_class": "com.adidas.analytics.AlgorithmFactory"
   },
   "emr": {
-    "default_emr_version": "emr-5.21.0",
+    "default_emr_version": "emr-6.2.0",
     "default_ebs_size": "512"
   }
 }

@@ -47,7 +47,7 @@ class TestEMRSystem(S3TableTestBase):
             "lake": "m3d-da-bdp-prod-lake",
             "mart_cal": "m3d-da-bdp-prod-mart-cal",
             "application": "m3d-da-landing-application",
-            "log": "io.3stripes.factory.prod.ireland.infrastructure-logs"
+            "log": "factory.prod.region.infrastructure-logs"
           }},
           "s3_deployment_dir_base": "/m3d-prod/"
         }},
@@ -67,9 +67,9 @@ class TestEMRSystem(S3TableTestBase):
             "landing": "m3d-da-bdp-test-landing",
             "lake": "m3d-da-bdp-test-lake",
             "mart_cal": "m3d-da-bdp-test-mart-cal",
-            "metadata": "das-lab3-management-test",
+            "metadata": "m3d-da-management-test",
             "application": "m3d-da-landing-application",
-            "log": "io.3stripes.factory.test.ireland.infrastructure-logs"
+            "log": "factory.test.region.infrastructure-logs"
           }},
           "s3_deployment_dir_base": "/m3d-test/"
         }},
@@ -89,9 +89,9 @@ class TestEMRSystem(S3TableTestBase):
             "landing": "m3d-da-bdp-dev-landing",
             "lake": "m3d-da-bdp-dev-lake",
             "mart_cal": "m3d-da-bdp-dev-mart-cal",
-            "metadata": "das-lab3-management-dev",
+            "metadata": "m3d-da-management-dev",
             "application": "m3d-da-landing-application",
-            "log": "io.3stripes.factory.dev.ireland.infrastructure-logs"
+            "log": "factory.dev.region.infrastructure-logs"
           }},
           "s3_deployment_dir_base": "/m3d-dev/"
         }}
@@ -143,7 +143,7 @@ class TestEMRSystem(S3TableTestBase):
         "main_class": "com.adidas.analytics.AlgorithmFactory"
       }},
       "emr": {{
-        "default_emr_version": "emr-5.17.0",
+        "default_emr_version": "emr-6.2.0",
         "default_ebs_size": "128"
       }}
     }}
@@ -193,10 +193,10 @@ class TestEMRSystem(S3TableTestBase):
             "bucket_landing": "m3d-da-bdp-test-landing",
             "bucket_lake": "m3d-da-bdp-test-lake",
             "bucket_mart_cal": "m3d-da-bdp-test-mart-cal",
-            "bucket_log": "io.3stripes.factory.test.ireland.infrastructure-logs",
+            "bucket_log": "factory.test.region.infrastructure-logs",
 
             "default_ebs_size": "128",
-            "default_emr_version": "emr-5.17.0",
+            "default_emr_version": "emr-6.2.0",
 
             "aws_api_credentials": aws_api_credentials,
             "aws_s3_put_credentials": aws_s3_put_credentials,

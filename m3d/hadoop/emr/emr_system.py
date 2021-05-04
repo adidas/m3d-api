@@ -256,8 +256,8 @@ class EMRSystem(DataSystem):
     def create_emr_cluster(self, core_instance_type, core_instance_count,
                            master_instance_type, emr_version, ebs_size):
 
-        aws_region = 'us-east-2'
-        log_uri = 's3://aws-logs-923130144402-us-east-2/elasticmapreduce/'
+        aws_region = 'us-east-1'
+        log_uri = 's3://just-an-aws-logs-bucket/elasticmapreduce/'
         credentials = self.aws_api_credentials
 
         if emr_version is None:
@@ -456,8 +456,8 @@ class EMRSystem(DataSystem):
 
     def delete_emr_cluster(self, emr_cluster_id):
 
-        aws_region = 'us-east-2'
-        log_uri = 's3://aws-logs-923130144402-us-east-2/elasticmapreduce/'
+        aws_region = 'us-east-1'
+        log_uri = 's3://just-an-aws-logs-bucket/elasticmapreduce/'
         credentials = self.aws_api_credentials
 
         client = OpenSourceClient(aws_region, log_uri, credentials)

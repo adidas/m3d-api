@@ -196,8 +196,16 @@ class Table(data_system.DataSystem):
                 if col["is_partition_column"] and col["is_partition_column"].lower() == "y"
             ]
 
-            self.partition_column, self.partition_column_format = \
-                tuple_partition_column_format_list[0] if len(tuple_partition_column_format_list) > 0 else ["", ""]
+            if len(self.partitioned_by.split(",")) > 1 and len(tuple_partition_column_format_list) > 0:
+                # partitioning strategy based on multiple attributes
+                self.partition_columns = [
+                    [col["name_lake"], self._get_data_type(col["datatype"], col["length"], col["scale"])]
+                    for col in json_parser.get_value("destination", "columns")
+                    if col["is_partition_column"] and col["is_partition_column"].lower() == "y"
+                ]
+            elif len(tuple_partition_column_format_list) > 0:
+                # partitioning based on single attribute or single data derivation level (e.g., day)
+                self.partition_column, self.partition_column_format = tuple_partition_column_format_list[0]
 
             if remove_tconx_provided_file_name:
                 os.remove(tconx_file_path)

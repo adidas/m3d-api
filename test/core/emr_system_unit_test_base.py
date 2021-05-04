@@ -62,7 +62,6 @@ class EMRSystemUnitTestBase(UnitTestBase):
             - config.json will be changed to point to a test specific configuration files.
             - scon_emr will be changed to point to a test case specific root directory in HDFS and connect to HTTP
               server on localhost.
-            - scon_mdp will be changed to point to a dummy credentials configuration.
 
         :param tmpdir: test case specific temporary directory where configuration files will be created.
         :param destination_system: destination system code
@@ -136,7 +135,7 @@ class EMRSystemUnitTestBase(UnitTestBase):
         scon_emr_dict["api_action_polling_interval_seconds"] = 0.2
         scon_emr_dict["api_long_timeout_seconds"] = 20
 
-        scon_emr_dict["emr"]["default_emr_version"] = "emr-5.17.0"
+        scon_emr_dict["emr"]["default_emr_version"] = "emr-6.2.0"
         scon_emr_dict["emr"]["default_ebs_size"] = "128"
 
         scon_emr_dict["environments"][destination_environment]["s3_buckets"]["landing"] = \
