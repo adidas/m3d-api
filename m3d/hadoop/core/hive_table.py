@@ -70,11 +70,18 @@ class HiveTable(table.Table):
 
         if self.partitioned_by in Util.defined_partitions:
             return create_statement(self.columns_lake, Util.get_typed_target_partitions_hive(self.partitioned_by))
+        elif len(self.partitioned_by.split(",")) > 1 and len(self.partition_columns) > 0:
+            # when table is partitioned by several of its columns
+            # then the partition columns should be excluded from the list of regular columns
+            columns = list(
+                filter(lambda c: c[0] not in list(map(lambda pc: pc[0], self.partition_columns)), self.columns_lake)
+            )
+            return create_statement(columns, self.partition_columns)
         elif len(self.partitioned_by) > 0:
             matched_columns = list(filter(lambda x: x[0] == self.partitioned_by, self.columns_lake))
             if len(matched_columns) > 0:
                 # when table is partitioned by one of its columns
-                # then partition column should to excluded from list of regular columns
+                # then the partition column should be excluded from the list of regular columns
                 columns = filter(lambda x: x[0] != self.partitioned_by, self.columns_lake)
                 target_partitions = [(matched_columns[0][0], matched_columns[0][1])]
                 return create_statement(columns, target_partitions)

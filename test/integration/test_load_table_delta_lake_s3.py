@@ -143,7 +143,7 @@ class TestLoadTableDeltaLakeS3(S3TableTestBase):
 
         assert load_table_parameters["file_format"] == 'parquet'
         assert load_table_parameters["delta_table_dir"] == s3_table_active.dir_landing_delta_table
-        assert load_table_parameters["source_dir"] == s3_table_active.dir_landing_data
+        assert load_table_parameters["source_dir"] == s3_table_active.dir_landing_data + "*"
         assert load_table_parameters["business_key"] == s3_table_active.business_key
         assert load_table_parameters["condensation_key"] == ["actrequest_timestamp", "datapakid", "partno", "record"]
         assert load_table_parameters["record_mode_column"] == "recordmode"

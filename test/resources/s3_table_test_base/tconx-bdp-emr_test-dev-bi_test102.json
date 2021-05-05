@@ -1,0 +1,64 @@
+{
+    "source": {
+        "table": "TEST102",
+        "schema": "bi_m3d_out", 
+        "technology": "mysql",
+        "system": "bi", 
+        "database": "phb"
+    }, 
+    "destination": {
+        "table_lake": "bi_test102",
+        "database": "bdp_prod", 
+        "system": "bdp", 
+        "table_partition_strategy": "name1,name2",
+        "table_lakeout": "bi_test102",
+        "technology": "hive", 
+        "table_lake_changelog": "bi_test102_cl",
+        "columns": [
+            {
+                "datetime_format": "", 
+                "is_part_of_business_key": "y", 
+                "scale": "", 
+                "position": "1", 
+                "datatype": "varchar", 
+                "name_source": "NAME1",
+                "length": "21", 
+                "is_partition_column": "y",
+                "name_lakeout": "name1",
+                "timezone": "", 
+                "name_lake": "name1"
+            }, 
+            {
+                "datetime_format": "", 
+                "is_part_of_business_key": "y", 
+                "scale": "", 
+                "position": "2", 
+                "datatype": "varchar", 
+                "name_source": "NAME2",
+                "length": "6", 
+                "is_partition_column": "y",
+                "name_lakeout": "name2",
+                "timezone": "", 
+                "name_lake": "name2"
+            }, 
+            {
+                "datetime_format": "", 
+                "is_part_of_business_key": "y", 
+                "scale": "", 
+                "position": "3", 
+                "datatype": "varchar", 
+                "name_source": "NAME3",
+                "length": "4", 
+                "is_partition_column": "", 
+                "name_lakeout": "name3",
+                "timezone": "", 
+                "name_lake": "name3"
+            }
+        ], 
+        "schema": "dev_lake"
+    }, 
+    "source_files": {
+        "delimiter": "|", 
+        "header_lines": "0"
+    }
+}

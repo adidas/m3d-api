@@ -26,13 +26,15 @@ class DeltaLakeLoad(LoadHadoop):
             self._load_params.get('has_header', None),
             self._load_params.get('null_value', None),
             self._load_params.get('quote_char', None),
-            self._load_params.get('is_multiline_json', None),
+            self._load_params.get('multi_line', None),
             self._load_params.get('schema', None),
             self._dataset.dir_landing_data,
+            self._load_params.get('source_dir_suffix', '*'),
             self._dataset.dir_landing_delta_table,
             self._dataset.business_key,
             self._load_params.get('condensation_key', ["actrequest_timestamp", "datapakid", "partno", "record"]),
             self._load_params.get('record_mode_column', 'recordmode'),
+            self._load_params.get('init_condensation', None),
             self._load_params.get('init_condensation_with_record_mode', None),
             self._load_params.get('records_to_condense', [None, "", "N", "R", "D", "X"]),
             self._load_params.get('records_to_delete', ["R", "D", "X"]),
@@ -40,9 +42,9 @@ class DeltaLakeLoad(LoadHadoop):
             util.Util.get_target_partitions_list(self._dataset.partitioned_by),
             self._dataset.partition_column,
             self._dataset.partition_column_format,
-            self._load_params.get('ignore_affected_partitions_merge', None),
+            self._load_params.get('affected_partitions_merge', None),
             self._load_params.get('output_partitions_num', None),
-            self._load_params.get('compute_table_statistics', None),
+            self._load_params.get('compute_table_statistics', None)
         )
         return params
 
@@ -71,13 +73,15 @@ class DeltaLakeLoadParams(object):
             has_header,
             null_value,
             quote_char,
-            is_multiline_json,
+            multi_line,
             schema,
             source_dir,
+            source_dir_suffix,
             delta_table_dir,
             business_key,
             condensation_key,
             record_mode_column,
+            init_condensation,
             init_condensation_with_record_mode,
             records_to_condense,
             records_to_delete,
@@ -85,7 +89,7 @@ class DeltaLakeLoadParams(object):
             target_partitions,
             partition_column,
             partition_column_format,
-            ignore_affected_partitions_merge,
+            affected_partitions_merge,
             output_partitions_num,
             compute_table_statistics
     ):
@@ -98,15 +102,17 @@ class DeltaLakeLoadParams(object):
             self.null_value = null_value
         if quote_char is not None:
             self.quote_char = quote_char
-        if is_multiline_json is not None:
-            self.is_multiline_json = is_multiline_json
+        if multi_line is not None:
+            self.multi_line = multi_line
         if schema is not None:
             self.schema = schema
-        self.source_dir = source_dir
+        self.source_dir = source_dir + source_dir_suffix
         self.delta_table_dir = delta_table_dir
         self.business_key = business_key
         self.condensation_key = condensation_key
         self.record_mode_column = record_mode_column
+        if init_condensation is not None:
+            self.init_condensation = init_condensation
         if init_condensation_with_record_mode is not None:
             self.init_condensation_with_record_mode = init_condensation_with_record_mode
         self.records_to_condense = records_to_condense
@@ -115,8 +121,8 @@ class DeltaLakeLoadParams(object):
         self.target_partitions = target_partitions
         self.partition_column = partition_column
         self.partition_column_format = partition_column_format
-        if ignore_affected_partitions_merge is not None:
-            self.ignore_affected_partitions_merge = ignore_affected_partitions_merge
+        if affected_partitions_merge is not None:
+            self.affected_partitions_merge = affected_partitions_merge
         if output_partitions_num is not None:
             self.output_partitions_num = output_partitions_num
         if compute_table_statistics is not None:

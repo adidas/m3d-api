@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 function array_contains() {
   local LOCAL_NEEDLE=$1

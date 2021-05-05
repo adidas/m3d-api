@@ -20,7 +20,8 @@ class Boto3Util(object):
         s3_resource = boto3.resource(
             "s3",
             aws_access_key_id=aws_credentials.access_key_id,
-            aws_secret_access_key=aws_credentials.secret_access_key
+            aws_secret_access_key=aws_credentials.secret_access_key,
+            region_name='us-east-1'
         )
 
         return s3_resource

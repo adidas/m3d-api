@@ -25,9 +25,7 @@ class TestUtil(object):
         assert Util.get_target_partitions_list("day") == ["year", "month", "day"]
         assert Util.get_target_partitions_list("") == []
 
-        with pytest.raises(Exception) as exc_info:
-            Util.get_target_partitions_list("country")
-        assert "Partition type country not supported" in str(exc_info.value)
+        assert Util.get_target_partitions_list("country") == ["country"]
 
     @pytest.mark.bdp
     def test_get_target_partitions_string(self):
@@ -40,9 +38,7 @@ class TestUtil(object):
         assert Util.get_target_partitions_string("day") == "year,month,day"
         assert Util.get_target_partitions_string("") == ""
 
-        with pytest.raises(Exception) as exc_info:
-            Util.get_target_partitions_list("country")
-        assert "Partition type country not supported" in str(exc_info.value)
+        assert Util.get_target_partitions_string("country") == "country"
 
     @pytest.mark.bdp
     def test_get_defined_partition_columns_hive(self):
@@ -54,7 +50,3 @@ class TestUtil(object):
         assert Util.get_defined_target_partitions_hive("month") == "year smallint,month smallint"
         assert Util.get_defined_target_partitions_hive("day") == "year smallint,month smallint,day smallint"
         assert Util.get_defined_target_partitions_hive("") == ""
-
-        with pytest.raises(Exception) as exc_info:
-            Util.get_target_partitions_list("country")
-        assert "Partition type country not supported" in str(exc_info.value)

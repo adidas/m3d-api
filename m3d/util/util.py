@@ -1,10 +1,10 @@
-import collections
 import datetime
 import functools
 import json
 import os
 import subprocess
 
+from collections.abc import Mapping
 from m3d.exceptions.m3d_exceptions import M3DExecutionException, M3DIOException
 
 
@@ -52,7 +52,7 @@ class Util(object):
         combined = dict1.copy()
 
         for key, value in dict2.items():
-            if isinstance(value, collections.Mapping):
+            if isinstance(value, Mapping):
                 combined[key] = Util.merge_nested_dicts(combined.get(key, {}), value)
             else:
                 combined[key] = value
@@ -121,10 +121,15 @@ class Util(object):
 
         if not partitioned_by:
             return []
+        elif len(partitioned_by.split(",")) > 1:
+            # multi column partitioning
+            return partitioned_by.split(",")
         elif partitioned_by in Util.defined_partitions:
+            # date derivation partitioning
             return Util.defined_partitions[partitioned_by]
         else:
-            raise Exception("Partition type " + partitioned_by + " not supported")
+            # single column partitioning
+            return [partitioned_by]
 
     @staticmethod
     def get_target_partitions_string(partitioned_by):

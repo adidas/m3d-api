@@ -9,6 +9,12 @@ class S3TableTestBase(EMRSystemUnitTestBase):
     default_tconx = \
         "test/resources/s3_table_test_base/tconx-bdp-emr_test-dev-bi_test101.json"
 
+    multi_partition_tconx = \
+        "test/resources/s3_table_test_base/tconx-bdp-emr_test-dev-bi_test102.json"
+
+    single_partition_tconx = \
+        "test/resources/s3_table_test_base/tconx-bdp-emr_test-dev-bi_test103.json"
+
     def env_setup(
             self,
             tmpdir,
